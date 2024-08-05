@@ -1,0 +1,17 @@
+<h1 class="justify-text-center">LOGIN</h1>
+<form (ngSubmit)="login()" [formGroup]="form">
+  <div class="container col-6 m-5">
+    <div class="form-floating mb-3">
+      <input type="email" class="form-control" id="email" formControlName="email" placeholder="name@example.com">
+      <label for="email">Email address</label>
+    </div>
+    <div class="form-floating">
+      <input type="password" class="form-control" id="password" formControlName="password" placeholder="Password">
+      <label for="password">Password</label>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-outline-dark mt-3">Login</button>
+<!--      <button class="btn btn-outline-danger mt-3" (click)="logout()">Logout</button>-->
+    </div>
+  </div>
+</form>
