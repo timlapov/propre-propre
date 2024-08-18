@@ -25,6 +25,7 @@ export interface IClient {
   address: string;
   city: ICity | null;
   gender: IGender | null;
+  password: string;
 }
 
 export interface ICountry {

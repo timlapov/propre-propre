@@ -2,19 +2,21 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { IToken } from "./auth";
+import {DecodedToken, IToken} from "./auth";
 import {jwtDecode} from "jwt-decode";
+import {environment} from "../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private url = 'http://localhost:8000/api';
+  private url = environment.apiUrl;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) {
+  }
 
   login(credentials: { email: string; password: string }): Observable<IToken> {
-    return this.http.post<IToken>(`${this.url}api/login`, credentials);
+    return this.http.post<IToken>(`${this.url}/login`, credentials);
   }
 
   saveToken(token: string): void {
@@ -40,5 +42,16 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('token');
     this.router.navigate(['login']);
+  }
+
+  getCurrentUser(): DecodedToken | null {
+    const token = this.getToken();
+    if (!token) return null;
+    try {
+      return jwtDecode<DecodedToken>(token);
+    } catch (error) {
+      console.error('Erreur lors du décodage du token :', error);
+      return null;
+    }
   }
 }

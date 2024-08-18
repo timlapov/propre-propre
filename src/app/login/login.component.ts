@@ -18,9 +18,10 @@ export class LoginComponent {
   service = inject(AuthService);
   router = inject(Router);
 
-  public form: FormGroup = new FormGroup( {
-      email: new FormControl("", Validators.required),
-      password: new FormControl("", Validators.required)
+  public form: FormGroup = new FormGroup(
+    {
+      email: new FormControl("admin@admin.ru", Validators.required),
+      password: new FormControl("password", Validators.required)
     }
   )
 
@@ -29,12 +30,10 @@ export class LoginComponent {
       email: this.form.get('email')?.value,
       password: this.form.get('password')?.value
     }
-    const token: Observable<IToken> = this.service.login(credentials);
-    console.log(token);
-    // this.service.saveToken(token);
+    this.service.login(credentials).subscribe( token => {
+      console.log(token);
+      this.service.saveToken(token.token);
+    });
   }
 
-  logout() {
-
-  }
 }

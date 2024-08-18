@@ -1,0 +1,23 @@
+.hero-section {
+  overflow: hidden;
+}
+
+.hero-section h1 {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.hero-section p {
+  font-size: 1.1rem;
+  color: var(--dark);
+}
+
+.hero-section img {
+  z-index: 2;
+}
+
+@media (max-width: 767px) {
+  .hero-section h1 {
+    font-size: 2.5rem;
+  }
+}
