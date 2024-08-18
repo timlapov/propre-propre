@@ -1,0 +1,23 @@
+<p>Services</p>
+@if (services$ | async; as services) {
+  @for (service of services; track service.id) {
+    <div>{{ service.name }}</div>
+    <div>{{ service.description }}</div>
+  }
+} @else {
+  <p>Загрузка услуг...</p>
+}
+
+<p>Subcategories</p>
+@if (subcategories$ | async; as subcategories) {
+  @for (subcategory of subcategories; track subcategory.id) {
+    <div>{{ subcategory.name }}</div>
+    <p>-</p>
+    <div>{{ subcategory.category }}</div>
+    <p>-------------------------------------------</p>
+  }
+} @else {
+  <p>Загрузка услуг...</p>
+}
+
+
