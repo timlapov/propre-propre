@@ -18,7 +18,6 @@ export class ClientService {
 
   addClient(
     email: string,
-    roles: string[],
     name: string,
     surname: string,
     birthdate: Date | null,
@@ -29,7 +28,6 @@ export class ClientService {
   ): Observable<IClient> {
     const clientData = {
       email,
-      roles,
       name,
       surname,
       birthdate: birthdate instanceof Date
@@ -42,6 +40,5 @@ export class ClientService {
     };
     return this.http.post<IClient>(`${this.url}/clients`, clientData, { headers: this.headers });
   }
-
 
 }

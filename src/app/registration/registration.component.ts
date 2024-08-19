@@ -4,11 +4,13 @@ import {ClientService} from "../../services/client.service";
 import {ICity, IGender} from "../../services/entities";
 import {SupportService} from "../../services/support.service";
 import {CommonModule} from "@angular/common";
+import {Router} from "@angular/router";
+import {ToastrModule, ToastrService} from "ngx-toastr";
 
 @Component({
   selector: 'app-registration',
   standalone: true,
-  imports: [ReactiveFormsModule, FormsModule, ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, FormsModule, ReactiveFormsModule, CommonModule, ToastrModule,],
   templateUrl: './registration.component.html',
   styleUrl: './registration.component.css'
 })
@@ -18,20 +20,22 @@ export class RegistrationComponent implements OnInit {
   genders: IGender[] = [];
 
   supportService = inject(SupportService);
+  clientService = inject(ClientService);
+  toastr = inject(ToastrService);
 
   constructor(
     private fb: FormBuilder,
-    private clientService: ClientService
+    private router: Router,
   ) {
     this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
       name: ['', Validators.required],
       surname: ['', Validators.required],
-      birthdate: [null, Validators.required],
+      city: ['', Validators.required],
       address: ['', Validators.required],
-      city: [null, Validators.required],
-      gender: [null, Validators.required]
+      gender: [null],
+      birthdate: [null]
     });
   }
 
@@ -45,7 +49,6 @@ export class RegistrationComponent implements OnInit {
       const formValue = this.registerForm.value;
       this.clientService.addClient(
         formValue.email,
-        ['ROLE_USER'], // предполагаем, что новые пользователи получают роль ROLE_USER
         formValue.name,
         formValue.surname,
         formValue.birthdate,
@@ -56,13 +59,32 @@ export class RegistrationComponent implements OnInit {
       ).subscribe(
         (newClient) => {
           console.log('Пользователь успешно зарегистрирован:', newClient);
-          // Здесь вы можете добавить логику для перенаправления пользователя или отображения сообщения об успехе
+          this.toastr.success('Vous pouvez maintenant vous connecter.', 'Vous avez été enregistré avec succès ! ',
+            {
+              timeOut: 3500,
+              progressBar: true,
+            }
+            );
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          });
         },
         (error) => {
           console.error('Ошибка при регистрации:', error);
-          // Здесь вы можете добавить логику для отображения сообщения об ошибке
+          this.toastr.error('Un utilisateur ayant cette adresse électronique a déjà été enregistré. ', 'Erreur d\'inscription');
         }
       );
     }
+  }
+
+  get requiredFieldsValid(): boolean {
+    const form = this.registerForm;
+    return !!form &&
+      !!form.get('email')?.valid &&
+      !!form.get('password')?.valid &&
+      !!form.get('name')?.valid &&
+      !!form.get('surname')?.valid &&
+      !!form.get('city')?.valid &&
+      !!form.get('address')?.valid;
   }
 }

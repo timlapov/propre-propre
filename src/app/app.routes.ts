@@ -5,11 +5,15 @@ import {ServicesComponent} from "./services/services.component";
 import {ClientProfileComponent} from "./client-profile/client-profile.component";
 import {authGuard} from "../services/guards/auth.guard";
 import {RegistrationComponent} from "./registration/registration.component";
+import {LayoutComponent} from "./layout/layout.component";
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'services', component: ServicesComponent },
-  { path: 'client/profile', component: ClientProfileComponent, canActivate: [authGuard] },
-  { path: 'client/registration', component: RegistrationComponent },
+  { path: '', component: LayoutComponent,
+  children: [
+    { path: '', component: HomeComponent },
+    { path: 'login', component: LoginComponent },
+    { path: 'services', component: ServicesComponent },
+    { path: 'client/profile', component: ClientProfileComponent, canActivate: [authGuard] },
+    { path: 'client/registration', component: RegistrationComponent }
+  ]}
 ];

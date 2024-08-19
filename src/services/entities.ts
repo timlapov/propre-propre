@@ -18,7 +18,6 @@ export interface ICity {
 export interface IClient {
   id: number;
   email: string;
-  roles: string[];
   name: string;
   surname: string;
   birthdate: Date | null;

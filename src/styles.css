@@ -28,11 +28,13 @@
   background-color: var(--primary);
   border-color: var(--primary);
   color: white;
+  border-radius: 25px;
+  transition: all 0.3s ease;
 }
 
 .btn-primary-custom:hover {
-  background-color: #4645AB;
-  border-color: #4645AB;
+  background-color: rgba(var(--primary-rgb), 0.8);
+  border-color: rgba(var(--primary-rgb), 0.8);
 }
 
 .btn-secondary-custom {
