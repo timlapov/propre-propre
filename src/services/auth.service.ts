@@ -16,7 +16,7 @@ export class AuthService {
   }
 
   login(credentials: { email: string; password: string }): Observable<IToken> {
-    return this.http.post<IToken>(`${this.url}/login`, credentials);
+    return this.http.post<IToken>(`${this.url}api/login`, credentials);
   }
 
   saveToken(token: string): void {

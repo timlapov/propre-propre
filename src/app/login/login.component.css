@@ -1,0 +1,9 @@
+label {
+  display: block;
+  margin-bottom: 5px;
+  color: darkgray;
+}
+
+h1 {
+  color: var(--dark);
+}

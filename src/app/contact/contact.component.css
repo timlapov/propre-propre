@@ -1,0 +1,14 @@
+.categories-scroll {
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+
+.categories-scroll .col {
+  display: inline-block;
+  float: none;
+}
+
+.categories-scroll::-webkit-scrollbar {
+  display: none;
+}

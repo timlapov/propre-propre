@@ -84,9 +84,19 @@ export interface IService {
   price: number;
 }
 
+// export interface ISubcategory {
+//   id: number;
+//   name: string;
+//   priceCoefficient: number;
+//   category: ICategory;
+// }
+
 export interface ISubcategory {
   id: number;
   name: string;
-  priceCoefficient: number;
-  category: ICategory;
+  price_coefficient: number;
+  category: string;
+  imageUrl: string;
+  '@id': string;
+  '@type': string;
 }

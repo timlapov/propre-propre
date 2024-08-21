@@ -38,7 +38,7 @@ export class ClientService {
       gender: gender ? `/api/genders/${gender.id}` : null,
       password
     };
-    return this.http.post<IClient>(`${this.url}/clients`, clientData, { headers: this.headers });
+    return this.http.post<IClient>(`${this.url}api/clients`, clientData, { headers: this.headers });
   }
 
 }

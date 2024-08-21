@@ -1,23 +1,97 @@
-<p>Services</p>
-@if (services$ | async; as services) {
-  @for (service of services; track service.id) {
-    <div>{{ service.name }}</div>
-    <div>{{ service.description }}</div>
-  }
-} @else {
-  <p>Загрузка услуг...</p>
-}
+<div class="container">
+  <div class="row">
+  <div class="col-md-8">
+<!--    NAVBAR START    -->
+    <div class="row navbar-services sticky-top">
+      <div class="container">
+        <ul class="nav nav-pills mb-2" id="pills-tab" role="tablist">
+          @for (service of services$ | async; track service.id) {
+            <li class="nav-item">
+              <button class="nav-link px-3"
+                      [class.active]="service.id === activeServiceId()"
+                      id="pills-{{service.id}}-tab"
+                      [attr.data-bs-toggle]="'pill'"
+                      [attr.data-bs-target]="'#pills-' + service.id"
+                      type="button"
+                      role="tab"
+                      [attr.aria-controls]="'pills-' + service.id"
+                      [attr.aria-selected]="service.id === activeServiceId()"
+                      (click)="setActiveService(service.id)">
+                {{service.name}}
+              </button>
+            </li>
+          }
+        </ul>
+        <div class="tab-content" id="pills-tabContent">
+          @for (service of services$ | async; track service.id) {
+            <div class="tab-pane fade service-description text-primary-custom text-center"
+                 [class.show]="service.id === activeServiceId()"
+                 [class.active]="service.id === activeServiceId()"
+                 id="pills-{{service.id}}"
+                 [attr.aria-labelledby]="'pills-' + service.id + '-tab'">
+              {{service.description}}
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+<!--    NAVBAR END -->
 
-<p>Subcategories</p>
-@if (subcategories$ | async; as subcategories) {
-  @for (subcategory of subcategories; track subcategory.id) {
-    <div>{{ subcategory.name }}</div>
-    <p>-</p>
-    <div>{{ subcategory.category }}</div>
-    <p>-------------------------------------------</p>
-  }
-} @else {
-  <p>Загрузка услуг...</p>
-}
+<!--    LIST OF CATEGORIES START-->
+    @if (categoriesWithSubcategories$ | async; as categories) {
+      @for (category of categories; track category.id) {
+        <h3 class="text-primary-custom">{{ category.name }}</h3>
+
+          @for (subcategory of category.subcategories; track subcategory.id) {
+            <p>{{ subcategory.name }}</p>
+          }
+
+      }
+    } @else {
+      <p class="placeholder-glow">
+        <span class="placeholder col-12"></span>
+      </p>
+    }
+
+
+
+<!--    LIST OF CATEGORIES END-->
+  </div>
+<!--    CART START-->
+  <div class="col-md-4 div-cart vh-100 bg-primary-custom rounded-3 mb-3">
+    <div class="row sticky-top">
+      <h2>Je suis panier</h2>
+    </div>
+  </div>
+    <!--    CART END-->
+  </div>
+</div>
+
+
+
+
+
+
+<!--<p>Services</p>-->
+<!--@if (services$ | async; as services) {-->
+<!--  @for (service of services; track service.id) {-->
+<!--    <div>{{ service.name }}</div>-->
+<!--    <div>{{ service.description }}</div>-->
+<!--  }-->
+<!--} @else {-->
+<!--  <p>Загрузка услуг...</p>-->
+<!--}-->
+
+<!--<p>Subcategories</p>-->
+<!--@if (subcategories$ | async; as subcategories) {-->
+<!--  @for (subcategory of subcategories; track subcategory.id) {-->
+<!--    <div>{{ subcategory.name }}</div>-->
+<!--    <p>-</p>-->
+<!--    <div>{{ subcategory.category }}</div>-->
+<!--    <p>-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;</p>-->
+<!--  }-->
+<!--} @else {-->
+<!--  <p>Загрузка услуг...</p>-->
+<!--}-->
 
 

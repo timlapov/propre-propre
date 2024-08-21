@@ -15,13 +15,13 @@ export class SupportService {
   constructor(private http: HttpClient) { }
 
   getAllCities() {
-    return this.http.get<HydraCollection<ICity>>(`${this.url}/cities`).pipe(
+    return this.http.get<HydraCollection<ICity>>(`${this.url}api/cities`).pipe(
       map(response => response['hydra:member'])
     );
   }
 
   getAllGenders() {
-    return this.http.get<HydraCollection<IGender>>(`${this.url}/genders`).pipe(
+    return this.http.get<HydraCollection<IGender>>(`${this.url}api/genders`).pipe(
       map(response => response['hydra:member'])
     );
   }

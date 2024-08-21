@@ -1,78 +1,169 @@
+<!--<div class="register-container">-->
+<!--  <h2>L'Inscription</h2>-->
+<!--  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">-->
+<!--    <div class="form-group">-->
+<!--      <label for="email">Email</label>-->
+<!--      <input type="email" id="email" formControlName="email" required>-->
+<!--      <div class="error" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">-->
+<!--        <span *ngIf="registerForm.get('email')?.errors?.['required']">L'email est obligatoire</span>-->
+<!--        <span *ngIf="registerForm.get('email')?.errors?.['email']">Email incorrect</span>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <div class="form-group">-->
+<!--      <label for="password">Mot de passe</label>-->
+<!--      <input type="password" id="password" formControlName="password" required>-->
+<!--      <div class="error" *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">-->
+<!--        <span *ngIf="registerForm.get('password')?.errors?.['required']">Mot de passe obligatoire</span>-->
+<!--        <span *ngIf="registerForm.get('password')?.errors?.['minlength']">Le mot de passe doit comporter au moins 8 caractères</span>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <div class="form-group">-->
+<!--      <label for="name">Prénom</label>-->
+<!--      <input type="text" id="name" formControlName="name" required>-->
+<!--      <div class="error" *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">-->
+<!--        <span *ngIf="registerForm.get('name')?.errors?.['required']">Prénom obligatoire</span>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <div class="form-group">-->
+<!--      <label for="surname">Nom</label>-->
+<!--      <input type="text" id="surname" formControlName="surname" required>-->
+<!--      <div class="error" *ngIf="registerForm.get('surname')?.invalid && registerForm.get('surname')?.touched">-->
+<!--        <span *ngIf="registerForm.get('surname')?.errors?.['required']">Nom obligatoire</span>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <div class="form-group">-->
+<!--      <label for="city">Ville</label>-->
+<!--      <select id="city" formControlName="city" required>-->
+<!--        <option value="">Sélectionnez une ville</option>-->
+<!--        <option *ngFor="let city of cities" [ngValue]="city">{{city.name}}</option>-->
+<!--      </select>-->
+<!--      <div class="error" *ngIf="registerForm.get('city')?.invalid && registerForm.get('city')?.touched">-->
+<!--        <span *ngIf="registerForm.get('city')?.errors?.['required']">La ville est obligatoire</span>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <div class="form-group">-->
+<!--      <label for="address">Adresse</label>-->
+<!--      <textarea id="address" formControlName="address" required></textarea>-->
+<!--      <div class="error" *ngIf="registerForm.get('address')?.invalid && registerForm.get('address')?.touched">-->
+<!--        <span *ngIf="registerForm.get('address')?.errors?.['required']">L'adresse est obligatoire</span>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <div class="form-group">-->
+<!--      <label for="gender">Genre</label>-->
+<!--      <select id="gender" formControlName="gender">-->
+<!--        <option value="">Sélectionnez un genre</option>-->
+<!--        <option *ngFor="let gender of genders" [ngValue]="gender">{{gender.name}}</option>-->
+<!--      </select>-->
+<!--      <div class="error" *ngIf="registerForm.get('gender')?.invalid && registerForm.get('gender')?.touched">-->
+<!--&lt;!&ndash;        <span *ngIf="registerForm.get('gender')?.errors?.['required']">Le genre est obligatoire</span>&ndash;&gt;-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <div class="form-group">-->
+<!--      <label for="birthdate">Date de naissance</label>-->
+<!--      <input type="date" id="birthdate" formControlName="birthdate">-->
+<!--      <div class="error" *ngIf="registerForm.get('birthdate')?.invalid && registerForm.get('birthdate')?.touched">-->
+<!--&lt;!&ndash;        <span *ngIf="registerForm.get('birthdate')?.errors?.['required']">La date de naissance est obligatoire</span>&ndash;&gt;-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <button type="submit" [disabled]="!requiredFieldsValid" class="btn btn-primary-custom">S'inscrire</button>-->
+<!--  </form>-->
+<!--</div>-->
+
 <div class="register-container">
-  <h2>L'Inscription</h2>
+  <h1 class="text-center mb-3">L'Inscription</h1>
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label for="email">Email</label>
-      <input type="email" id="email" formControlName="email" required>
-      <div class="error" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
-        <span *ngIf="registerForm.get('email')?.errors?.['required']">L'email est obligatoire</span>
-        <span *ngIf="registerForm.get('email')?.errors?.['email']">Email incorrect</span>
-      </div>
-    </div>
 
-    <div class="form-group">
-      <label for="password">Mot de passe</label>
-      <input type="password" id="password" formControlName="password" required>
-      <div class="error" *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
-        <span *ngIf="registerForm.get('password')?.errors?.['required']">Mot de passe obligatoire</span>
-        <span *ngIf="registerForm.get('password')?.errors?.['minlength']">Le mot de passe doit comporter au moins 8 caractères</span>
-      </div>
-    </div>
+    <div class="row">
+      <div class="col-md-6">
 
-    <div class="form-group">
-      <label for="name">Prénom</label>
-      <input type="text" id="name" formControlName="name" required>
-      <div class="error" *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
-        <span *ngIf="registerForm.get('name')?.errors?.['required']">Prénom obligatoire</span>
-      </div>
-    </div>
+        <div class="form-floating mb-3">
+          <input type="email" class="form-control" id="email" formControlName="email" placeholder="name@example.com" required>
+          <label for="email">Email</label>
+          <div class="error" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+            <span *ngIf="registerForm.get('email')?.errors?.['required']">L'email est obligatoire</span>
+            <span *ngIf="registerForm.get('email')?.errors?.['email']">Email incorrect</span>
+          </div>
+        </div>
 
-    <div class="form-group">
-      <label for="surname">Nom</label>
-      <input type="text" id="surname" formControlName="surname" required>
-      <div class="error" *ngIf="registerForm.get('surname')?.invalid && registerForm.get('surname')?.touched">
-        <span *ngIf="registerForm.get('surname')?.errors?.['required']">Nom obligatoire</span>
-      </div>
-    </div>
+        <div class="form-floating mb-3">
+          <input type="password" class="form-control" id="password" formControlName="password" placeholder="Mot de passe" required>
+          <label for="password">Mot de passe</label>
+          <div class="error" *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+            <span *ngIf="registerForm.get('password')?.errors?.['required']">Mot de passe obligatoire</span>
+            <span *ngIf="registerForm.get('password')?.errors?.['minlength']">Le mot de passe doit comporter au moins 8 caractères</span>
+          </div>
+        </div>
 
-    <div class="form-group">
-      <label for="city">Ville</label>
-      <select id="city" formControlName="city" required>
-        <option value="">Sélectionnez une ville</option>
-        <option *ngFor="let city of cities" [ngValue]="city">{{city.name}}</option>
-      </select>
-      <div class="error" *ngIf="registerForm.get('city')?.invalid && registerForm.get('city')?.touched">
-        <span *ngIf="registerForm.get('city')?.errors?.['required']">La ville est obligatoire</span>
-      </div>
-    </div>
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" id="name" formControlName="name" placeholder="Prénom" required>
+          <label for="name">Prénom</label>
+          <div class="error" *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
+            <span *ngIf="registerForm.get('name')?.errors?.['required']">Prénom obligatoire</span>
+          </div>
+        </div>
 
-    <div class="form-group">
-      <label for="address">Adresse</label>
-      <textarea id="address" formControlName="address" required></textarea>
-      <div class="error" *ngIf="registerForm.get('address')?.invalid && registerForm.get('address')?.touched">
-        <span *ngIf="registerForm.get('address')?.errors?.['required']">L'adresse est obligatoire</span>
-      </div>
-    </div>
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" id="surname" formControlName="surname" placeholder="Nom" required>
+          <label for="surname">Nom</label>
+          <div class="error" *ngIf="registerForm.get('surname')?.invalid && registerForm.get('surname')?.touched">
+            <span *ngIf="registerForm.get('surname')?.errors?.['required']">Nom obligatoire</span>
+          </div>
+        </div>
 
-    <div class="form-group">
-      <label for="gender">Genre</label>
-      <select id="gender" formControlName="gender">
-        <option value="">Sélectionnez un genre</option>
-        <option *ngFor="let gender of genders" [ngValue]="gender">{{gender.name}}</option>
-      </select>
-      <div class="error" *ngIf="registerForm.get('gender')?.invalid && registerForm.get('gender')?.touched">
-<!--        <span *ngIf="registerForm.get('gender')?.errors?.['required']">Le genre est obligatoire</span>-->
-      </div>
-    </div>
+        <div class="form-floating mb-3">
+          <input type="date" class="form-control" id="birthdate" formControlName="birthdate" placeholder="Date de naissance">
+          <label for="birthdate">Date de naissance</label>
+          <div class="error" *ngIf="registerForm.get('birthdate')?.invalid && registerForm.get('birthdate')?.touched">
+          </div>
+        </div>
 
-    <div class="form-group">
-      <label for="birthdate">Date de naissance</label>
-      <input type="date" id="birthdate" formControlName="birthdate">
-      <div class="error" *ngIf="registerForm.get('birthdate')?.invalid && registerForm.get('birthdate')?.touched">
-<!--        <span *ngIf="registerForm.get('birthdate')?.errors?.['required']">La date de naissance est obligatoire</span>-->
-      </div>
-    </div>
+      </div><!-- Конец первой колонки -->
 
-    <button type="submit" [disabled]="!requiredFieldsValid" class="btn btn-primary-custom">S'inscrire</button>
+      <!-- Начало второй колонки -->
+      <div class="col-md-6">
+
+
+        <div class="form-floating mb-3">
+          <select class="form-control" id="city" formControlName="city" required>
+            <option value="" disabled>Sélectionnez une ville</option>
+            <option *ngFor="let city of cities" [ngValue]="city">{{city.name}}</option>
+          </select>
+          <label for="city">Ville</label>
+          <div class="error" *ngIf="registerForm.get('city')?.invalid && registerForm.get('city')?.touched">
+            <span *ngIf="registerForm.get('city')?.errors?.['required']">La ville est obligatoire</span>
+          </div>
+        </div>
+
+        <div class="form-floating mb-3">
+          <textarea class="form-control form-text" id="address" formControlName="address" placeholder="Adresse" required></textarea>
+          <label for="address">Adresse</label>
+          <div class="error" *ngIf="registerForm.get('address')?.invalid && registerForm.get('address')?.touched">
+            <span *ngIf="registerForm.get('address')?.errors?.['required']">L'adresse est obligatoire</span>
+          </div>
+        </div>
+
+        <div class="form-floating mb-3">
+          <select class="form-control" id="gender" formControlName="gender">
+            <option value="" [ngValue]="null" disabled>Sélectionnez un genre</option>
+            <option *ngFor="let gender of genders" [ngValue]="gender">{{gender.name}}</option>
+          </select>
+          <label for="gender">Genre</label>
+          <div class="error" *ngIf="registerForm.get('gender')?.invalid && registerForm.get('gender')?.touched">
+          </div>
+        </div>
+
+        <button type="submit" [disabled]="!requiredFieldsValid" class="btn btn-primary-custom mt-4">S'inscrire</button>
+
+      </div><!-- Конец второй колонки -->
+    </div><!-- Конец строки -->
+
   </form>
 </div>
