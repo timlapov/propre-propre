@@ -8,6 +8,7 @@ import {RegistrationComponent} from "./registration/registration.component";
 import {LayoutComponent} from "./layout/layout.component";
 import {EmployeeDashboardComponent} from "./employee-dashboard/employee-dashboard.component";
 import {ContactComponent} from "./contact/contact.component";
+import {Error404Component} from "./error404/error404.component";
 
 export const routes: Routes = [
   { path: '', component: LayoutComponent,
@@ -18,6 +19,7 @@ export const routes: Routes = [
     { path: 'client/profile', component: ClientProfileComponent, canActivate: [authGuard] },
     { path: 'client/registration', component: RegistrationComponent },
     { path: 'employee/dashboard', component: EmployeeDashboardComponent, canActivate: [authGuard]},
-    { path: 'contact', component: ContactComponent}
+    { path: 'contact', component: ContactComponent},
+    { path: '**', component: Error404Component},
   ]}
 ];

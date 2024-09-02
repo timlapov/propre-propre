@@ -20,11 +20,12 @@ export interface IClient {
   email: string;
   name: string;
   surname: string;
-  birthdate: Date | null;
+  birthdate?: Date | null;
   address: string;
   city: ICity | null;
   gender: IGender | null;
   password: string;
+  orders: IOrder[];
 }
 
 export interface ICountry {
@@ -55,15 +56,14 @@ export interface IGender {
 
 export interface IItem {
   id: number;
+  order_: string;
   subcategory: ISubcategory;
-  fabric: IFabric;
   service: IService;
-  additionalService: IAdditionalService | null;
-  order: IOrder;
 }
 
 export interface IOrder {
   id: number;
+  express: boolean;
   orderStatus: IOrderStatus;
   created: Date;
   completed: Date | null;

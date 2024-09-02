@@ -25,6 +25,4 @@ export class SupportService {
       map(response => response['hydra:member'])
     );
   }
-
-
 }

@@ -6,6 +6,7 @@ import {provideHttpClient, withInterceptors} from "@angular/common/http";
 import {authInterceptor} from "../services/auth.interceptor";
 import {provideToastr} from "ngx-toastr";
 import {provideAnimations} from "@angular/platform-browser/animations";
+import {DatePipe} from "@angular/common";
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -13,6 +14,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor])),
     provideToastr(),
-    provideAnimations()
+    provideAnimations(),
+    DatePipe
   ]
 };

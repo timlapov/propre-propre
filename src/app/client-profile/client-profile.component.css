@@ -1,0 +1,9 @@
+.sticky-top {
+  position: sticky;
+  top: 80px;
+  z-index: 1020;
+}
+
+#address {
+  height: 132px;
+}

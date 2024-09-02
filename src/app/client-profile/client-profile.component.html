@@ -1,5 +1,199 @@
-<p>client-profile works!</p>
-<div *ngIf="authService.isLogged()" class="">
-  <p>Connecté</p>
+<div class="container-fluid p-4">
+  <div class="row d-flex">
+    <!-- Left column: User info -->
+    @if ($client | async; as client) {
+      <pre>{{ client | json }}</pre>
+      <div class="col-md-3">
+        <div class="card rounded-4 shadow-lg sticky-top">
+          <div class="card-body text-center">
+            <h5 class="card-title" id="userName">{{ client.name }} {{ client.surname }}</h5>
+            <p class="card-text"><span class="badge bg-success">5 commandes !</span></p>
+            <div class="mb-3 text-start">
+              <small class="text-muted">Email</small>
+              <p id="userEmail">{{ client.email }}</p>
+            </div>
+            <div class="mb-3 text-start">
+              <small class="text-muted">Date de naissance</small>
+              <p id="userBirthdate">{{ client.birthdate | date:'dd/MM/yyyy' }}</p>
+            </div>
+            <div class="mb-3 text-start">
+              <small class="text-muted">Gender</small>
+              <p id="userGender">{{ client.gender?.name }}</p>
+            </div>
+            <div class="mb-3 text-start">
+              <small class="text-muted">Adresse</small>
+              <p id="userAddress">{{ client.address }}</p>
+            </div>
+            <div class="mb-3 text-start">
+              <p id="userCity">{{ client.city?.name }}</p>
+            </div>
+            <button class="btn btn-primary-custom w-100 mb-3" (click)="openEditModal()">Modifier</button>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="card col-3" aria-hidden="true">
+        <div class="card-body">
+          <h5 class="card-title placeholder-glow">
+            <span class="placeholder col-6"></span>
+          </h5>
+          <p class="card-text placeholder-glow">
+            <span class="placeholder col-7"></span>
+            <span class="placeholder col-4"></span>
+            <span class="placeholder col-4"></span>
+            <span class="placeholder col-6"></span>
+            <span class="placeholder col-8"></span>
+          </p>
+        </div>
+      </div>
+    }
+    <!-- Right column: Appointments and Invoices -->
+    <div class="col-md-9">
+      <div class="card rounded-4 shadow-lg">
+        <h4 class="text-center m-1">Liste des commandes</h4>
+        <ul class="nav nav-tabs p-2">
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="!showCompletedOrders" (click)="showCompletedOrders = false">Commandes en cours</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="showCompletedOrders" (click)="showCompletedOrders = true">Сommandes terminées</a>
+          </li>
+        </ul>
+        <div class="accordion m-1" id="ordersAccordion">
 
+          @if (getFilteredOrders() | async; as orders) {
+            @if (orders.length > 0) {
+              @for (order of orders; track order.id; let i = $index) {
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <button class="accordion-button" [class.collapsed]="i !== 0" type="button" [attr.data-bs-toggle]="'collapse'" [attr.data-bs-target]="'#collapse' + order.id" [attr.aria-expanded]="i === 0" [attr.aria-controls]="'collapse' + order.id">
+                  Commande #{{ order.id }} - {{ order.created | date:'dd/MM/yyyy HH:mm' }} - {{ order.orderStatus.name }}
+                </button>
+              </h2>
+              <div [id]="'collapse' + order.id" class="accordion-collapse collapse" [class.show]="i === 0" [attr.data-bs-parent]="'#ordersAccordion'">
+                <div class="accordion-body">
+                  <p><strong>Employé assigné:</strong> {{ order.employee?.name }} {{ order.employee?.surname }}</p>
+                  <p><strong>Statut:</strong> {{ order.orderStatus.name }}</p>
+                  <p><strong>Date de création:</strong> {{ order.created | date:'dd/MM/yyyy HH:mm' }}</p>
+                  @if (order.completed) {
+                    <p><strong>Date de complétion:</strong> {{ order.completed | date:'dd/MM/yyyy HH:mm' }}</p>
+                  }
+                  <p><strong>Express:</strong> {{ order.express ? 'Oui' : 'Non' }}</p>
+                  <h5>Articles:</h5>
+                  <ul>
+                    @for (item of order.items; track item.id) {
+                      <li>
+                        {{ item.subcategory.name }}
+                        <br>
+<!--                        Service: {{ item.service['@id'] }}-->
+                        <br>
+<!--                        Repassage: {{ item.ironing ? 'Oui' : 'Non' }}, Parfumage: {{ item.perfuming ? 'Oui' : 'Non' }}-->
+                      </li>
+                    }
+                  </ul>
+                </div>
+              </div>
+            </div>
+          }
+            } @else {
+              <p>Aucune commande trouvée.</p>
+            }
+          } @else {
+            <p>Chargement des commandes...</p>
+          }
+
+        </div>
+      </div>
+    </div>
+</div>
+</div>
+
+<!--  <div *ngIf="authService.isLogged()" class="">-->
+<!--    <p>Connecté</p>-->
+<!--  </div>-->
+
+<!-- MODAL UPDATE PROFILE -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editProfileModalLabel">Actualisez votre profil</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        @if (editProfileForm && cities.length > 0 && genders.length > 0) {
+        <form *ngIf="editProfileForm" [formGroup]="editProfileForm" (ngSubmit)="onSubmit()">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="email" formControlName="email" placeholder="name@example.com" required>
+                <label for="email">Email</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="birthdate" formControlName="birthdate" placeholder="Date de naissance">
+                <label for="birthdate">Date de naissance</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="name" formControlName="name" placeholder="Prénom" required>
+                <label for="name">Prénom</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="surname" formControlName="surname" placeholder="Nom" required>
+                <label for="surname">Nom</label>
+              </div>
+              <div class="form-floating mb-3">
+                <select class="form-control" id="gender" formControlName="gender" [compareWith]="compareGender">
+                  <option value="" [ngValue]="null">Sélectionnez un genre</option>
+                  <option *ngFor="let gender of genders" [ngValue]="gender">{{gender.name}}</option>
+                </select>
+                <label for="gender">Genre</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-floating mb-3">
+                <select class="form-control" id="city" formControlName="city" [compareWith]="compareCity" required>
+                  <option [ngValue]="null" disabled>Sélectionnez une ville</option>
+                  <option *ngFor="let city of cities" [ngValue]="city">{{city.name}}</option>
+                </select>
+                <label for="city">Ville</label>
+              </div>
+              <div class="form-floating mb-3">
+                <textarea class="form-control" id="address" formControlName="address" placeholder="Adresse" required></textarea>
+                <label for="address">Adresse</label>
+              </div>
+
+              <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" id="changePassword" formControlName="changePassword">
+                <label class="form-check-label" for="changePassword">Changer le mot de passe</label>
+              </div>
+
+              @if (changePassword) {
+                <div class="form-floating mb-3">
+                  <input type="password" class="form-control" id="newPassword" formControlName="newPassword" placeholder="Nouveau mot de passe">
+                  <label for="newPassword">Nouveau mot de passe</label>
+                  @if (editProfileForm.get('newPassword')?.invalid && editProfileForm.get('newPassword')?.touched) {
+                    <small class="text-danger">
+                      Le mot de passe doit contenir au moins 8 caractères.
+                    </small>
+                  }
+                </div>
+              }
+
+            </div>
+          </div>
+        </form>
+        } @else {
+          <div class="d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        }
+      </div>
+      <div class="modal-footer">
+<!--        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>-->
+        <button type="button" class="btn btn-secondary-custom" (click)="onSubmit()" [disabled]="!editProfileForm?.valid">Enregistrer</button>
+      </div>
+    </div>
+  </div>
 </div>

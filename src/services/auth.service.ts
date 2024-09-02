@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import {Observable, tap, throwError} from 'rxjs';
 import { Router } from '@angular/router';
 import {DecodedToken, IToken} from "./auth";
 import {jwtDecode} from "jwt-decode";
 import {environment} from "../environments/environment";
+import {catchError} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -19,20 +20,38 @@ export class AuthService {
     return this.http.post<IToken>(`${this.url}api/login`, credentials);
   }
 
+  refreshToken(): Observable<IToken> {
+    return this.http.post<IToken>(`${this.url}api/token/refresh`, {}).pipe(
+      tap(token => this.saveToken(token.token)),
+      catchError(error => {
+        this.logout();
+        return throwError(error);
+      })
+    );
+  }
+
   saveToken(token: string): void {
     localStorage.setItem('token', token);
   }
 
-  isLogged(): boolean {
+  isTokenExpired(): boolean {
     const token = this.getToken();
-    /*ici on va proteger le token voir en dessous pour installer jwt-decode */
-    if (!token) return false;
-    try {
-      const decodedToken = jwtDecode<IToken>(token);
-      return decodedToken.exp > Date.now() / 1000;
-    } catch (error) {
-      return false;
-    }
+    if (!token) return true;
+    const decodedToken = jwtDecode<IToken>(token);
+    return decodedToken.exp < Date.now() / 1000;
+  }
+
+  isLogged(): boolean {
+    // const token = this.getToken();
+    // /*ici on va proteger le token voir en dessous pour installer jwt-decode */
+    // if (!token) return false;
+    // try {
+    //   const decodedToken = jwtDecode<IToken>(token);
+    //   return decodedToken.exp > Date.now() / 1000;
+    // } catch (error) {
+    //   return false;
+    // }
+    return !!this.getToken() && !this.isTokenExpired();
   }
 
   getToken(): string | null {

@@ -54,3 +54,17 @@
 body {
   padding-top: 80px;
 }
+
+.nav-link {
+  color: var(--primary);
+ }
+
+/* SWITCHES */
+.form-check-input:checked {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+.form-check-input:not(:disabled):not(:checked):hover,
+.form-check-input:not(:disabled):not(:checked):focus {
+  border-color: var(--primary);
+}

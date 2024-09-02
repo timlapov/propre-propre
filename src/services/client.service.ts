@@ -41,4 +41,32 @@ export class ClientService {
     return this.http.post<IClient>(`${this.url}api/clients`, clientData, { headers: this.headers });
   }
 
+  getClientById(id: number): Observable<IClient> {
+    return this.http.get<IClient>(`${this.url}api/clients/${id}`);
+  }
+
+  updateClient(id: number, client: Partial<IClient>): Observable<IClient> {
+    const clientData = {
+      ...client,
+      city: client.city ? `/api/cities/${client.city.id}` : undefined,
+      gender: client.gender ? `/api/genders/${client.gender.id}` : undefined
+    };
+
+    const knownKeys: (keyof IClient)[] = ['id', 'email', 'name', 'surname', 'birthdate', 'address', 'city', 'gender', 'password'];
+    knownKeys.forEach(key => {
+      if (clientData[key] === undefined) {
+        delete clientData[key];
+      }
+    });
+
+    let headers = new HttpHeaders();
+    this.headers.keys().forEach(key => {
+      headers = headers.set(key, this.headers.get(key) || '');
+    });
+    headers = headers.set('Content-Type', 'application/merge-patch+json');
+    headers = headers.set('Accept', 'application/ld+json');
+
+    return this.http.patch<IClient>(`${this.url}api/clients/${id}`, clientData, { headers });
+  }
+
 }
