@@ -44,6 +44,7 @@ export class ClientProfileComponent implements OnInit {
   changePassword: boolean = false;
   private editProfileModal: Modal | null = null;
   private formReady: boolean = false;
+  protected filteredOrders: IOrder[] =[];
 
 
   ngOnInit() {
@@ -55,6 +56,7 @@ export class ClientProfileComponent implements OnInit {
       this.$client = this.clientService.getClientById(this.clientJwt.id);
       this.$client.subscribe(client => {
         this.initForm(client);
+        this.client = client;
       });
     } else {
       console.error('No valid client JWT found');
@@ -167,13 +169,20 @@ export class ClientProfileComponent implements OnInit {
     return g1 && g2 ? g1.id === g2.id : g1 === g2;
   }
 
-  getFilteredOrders(): Observable<IOrder[]> {
-    return this.$client ? this.$client.pipe(
-      map(client => (client?.orders || []).filter(order => {
-        const isCompleted = order.orderStatus.name === 'Livré';
-        return this.showCompletedOrders ? isCompleted : !isCompleted;
-      }))
-    ) : of([]);
+  filterOrders() {
+    if (this.client && this.client.orders) {
+      this.filteredOrders = this.client.orders.filter(order => {
+        const isCompleted: boolean = order.orderStatus.name === 'Livré';
+        return this.showCompletedOrders === isCompleted;
+      });
+    } else {
+      this.filteredOrders = [];
+    }
+  }
+
+  toggleOrdersView() {
+    this.showCompletedOrders = !this.showCompletedOrders;
+    this.filterOrders();
   }
 
 }

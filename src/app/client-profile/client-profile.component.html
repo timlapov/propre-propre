@@ -2,7 +2,7 @@
   <div class="row d-flex">
     <!-- Left column: User info -->
     @if ($client | async; as client) {
-      <pre>{{ client | json }}</pre>
+<!--      <pre>{{ client | json }}</pre>-->
       <div class="col-md-3">
         <div class="card rounded-4 shadow-lg sticky-top">
           <div class="card-body text-center">
@@ -27,7 +27,7 @@
             <div class="mb-3 text-start">
               <p id="userCity">{{ client.city?.name }}</p>
             </div>
-            <button class="btn btn-primary-custom w-100 mb-3" (click)="openEditModal()">Modifier</button>
+            <button class="btn btn-primary-custom w-100 mb-1" (click)="openEditModal()">Modifier</button>
           </div>
         </div>
       </div>
@@ -53,21 +53,18 @@
         <h4 class="text-center m-1">Liste des commandes</h4>
         <ul class="nav nav-tabs p-2">
           <li class="nav-item">
-            <a class="nav-link" [class.active]="!showCompletedOrders" (click)="showCompletedOrders = false">Commandes en cours</a>
+            <a class="nav-link" [class.active]="!showCompletedOrders" (click)="toggleOrdersView()">Commandes en cours</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" [class.active]="showCompletedOrders" (click)="showCompletedOrders = true">Сommandes terminées</a>
+            <a class="nav-link" [class.active]="showCompletedOrders" (click)="toggleOrdersView()">Сommandes terminées</a>
           </li>
         </ul>
-        <div class="accordion m-1" id="ordersAccordion">
-
-          @if (getFilteredOrders() | async; as orders) {
-            @if (orders.length > 0) {
-              @for (order of orders; track order.id; let i = $index) {
+        <div class="accordion mx-2 mb-2" id="ordersAccordion">
+          @for (order of filteredOrders; track order.id; let i = $index) {
             <div class="accordion-item">
               <h2 class="accordion-header">
                 <button class="accordion-button" [class.collapsed]="i !== 0" type="button" [attr.data-bs-toggle]="'collapse'" [attr.data-bs-target]="'#collapse' + order.id" [attr.aria-expanded]="i === 0" [attr.aria-controls]="'collapse' + order.id">
-                  Commande #{{ order.id }} - {{ order.created | date:'dd/MM/yyyy HH:mm' }} - {{ order.orderStatus.name }}
+                  Commande #{{ order.id }} - {{ order.created | date:'dd/MM/yyyy HH:mm' }} - {{ order.orderStatus.name }} - {{ order.totalPrice }}€
                 </button>
               </h2>
               <div [id]="'collapse' + order.id" class="accordion-collapse collapse" [class.show]="i === 0" [attr.data-bs-parent]="'#ordersAccordion'">
@@ -85,26 +82,22 @@
                       <li>
                         {{ item.subcategory.name }}
                         <br>
-<!--                        Service: {{ item.service['@id'] }}-->
+                        Service: {{ item.service?.name }}
                         <br>
-<!--                        Repassage: {{ item.ironing ? 'Oui' : 'Non' }}, Parfumage: {{ item.perfuming ? 'Oui' : 'Non' }}-->
+                        Repassage: {{ item.ironing ? 'Oui' : 'Non' }}, Parfumage: {{ item.perfuming ? 'Oui' : 'Non' }}
                       </li>
                     }
                   </ul>
                 </div>
               </div>
             </div>
+          } @empty {
+            <p class="text-center p-3">Aucune commande trouvée.</p>
           }
-            } @else {
-              <p>Aucune commande trouvée.</p>
-            }
-          } @else {
-            <p>Chargement des commandes...</p>
-          }
-
         </div>
       </div>
     </div>
+
 </div>
 </div>
 

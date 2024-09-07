@@ -9,6 +9,7 @@ import {LayoutComponent} from "./layout/layout.component";
 import {EmployeeDashboardComponent} from "./employee-dashboard/employee-dashboard.component";
 import {ContactComponent} from "./contact/contact.component";
 import {Error404Component} from "./error404/error404.component";
+import {roleGuard} from "../services/guards/role.guard";
 
 export const routes: Routes = [
   { path: '', component: LayoutComponent,
@@ -16,9 +17,9 @@ export const routes: Routes = [
     { path: '', component: HomeComponent },
     { path: 'login', component: LoginComponent },
     { path: 'services', component: ServicesComponent },
-    { path: 'client/profile', component: ClientProfileComponent, canActivate: [authGuard] },
+    { path: 'client/profile', component: ClientProfileComponent, canActivate: [roleGuard], data: { requiredRole: 'ROLE_USER' }  },
     { path: 'client/registration', component: RegistrationComponent },
-    { path: 'employee/dashboard', component: EmployeeDashboardComponent, canActivate: [authGuard]},
+    { path: 'employee/dashboard', component: EmployeeDashboardComponent, canActivate: [roleGuard], data: { requiredRole: 'ROLE_EMPLOYEE' } },
     { path: 'contact', component: ContactComponent},
     { path: '**', component: Error404Component},
   ]}

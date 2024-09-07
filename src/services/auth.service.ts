@@ -73,4 +73,20 @@ export class AuthService {
       return null;
     }
   }
+  hasRole(role: string): boolean {
+    const user = this.getCurrentUser();
+    return user ? user.roles.includes(role) : false;
+  }
+
+  getUserProfileRoute(): string {
+    const user = this.getCurrentUser();
+    if (user) {
+      if (user.roles.includes('ROLE_EMPLOYEE')) {
+        return '/employee/dashboard';
+      } else {
+        return '/client/profile';
+      }
+    }
+    return '/login';
+  }
 }

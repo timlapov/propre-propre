@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {HydraCollection} from "./auth";
-import {ICity, IGender, IService} from "./entities";
+import {ICity, IGender, IOrderStatus, IService} from "./entities";
 import {map} from "rxjs";
 import {environment} from "../environments/environment";
 
@@ -25,4 +25,10 @@ export class SupportService {
       map(response => response['hydra:member'])
     );
   }
+  getAllOrderStatuses() {
+    return this.http.get<HydraCollection<IOrderStatus>>(`${this.url}api/order_statuses`).pipe(
+      map(response => response['hydra:member'])
+    );
+  }
+
 }
