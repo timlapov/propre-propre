@@ -1,9 +1,3 @@
-export interface IAdditionalService {
-  id: number;
-  name: string;
-  priceCoefficient: number;
-}
-
 export interface ICategory {
   id: number;
   name: string;
@@ -40,13 +34,7 @@ export interface IEmployee {
   name: string;
   surname: string;
   phoneNumber: string;
-}
-
-export interface IFabric {
-  id: number;
-  name: string;
-  description: string | null;
-  priceCoefficient: number;
+  orders: IOrder[];
 }
 
 export interface IGender {
@@ -57,6 +45,8 @@ export interface IGender {
 export interface IItem {
   id: number;
   order_: string;
+  ironing: boolean;
+  perfuming: boolean;
   subcategory: ISubcategory;
   service: IService;
 }
@@ -70,6 +60,7 @@ export interface IOrder {
   client: IClient;
   employee: IEmployee | null;
   items: IItem[];
+  totalPrice: number;
 }
 
 export interface IOrderStatus {
@@ -84,13 +75,6 @@ export interface IService {
   price: number;
 }
 
-// export interface ISubcategory {
-//   id: number;
-//   name: string;
-//   priceCoefficient: number;
-//   category: ICategory;
-// }
-
 export interface ISubcategory {
   id: number;
   name: string;
@@ -99,4 +83,19 @@ export interface ISubcategory {
   imageUrl: string;
   '@id': string;
   '@type': string;
+}
+
+export interface CartItem {
+  subcategory: ISubcategory;
+  ironing: boolean;
+  perfuming: boolean;
+  quantity: number;
+  serviceId: number;
+}
+
+export interface ICoefficients {
+  id: number;
+  expressCoefficient: number;
+  ironingCoefficient: number;
+  perfumingCoefficient: number;
 }

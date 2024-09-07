@@ -36,6 +36,8 @@
 .btn-primary-custom:hover {
   background-color: rgba(var(--primary-rgb), 0.8);
   border-color: rgba(var(--primary-rgb), 0.8);
+  color: white;
+  font-weight: bolder;
 }
 
 .btn-secondary-custom {

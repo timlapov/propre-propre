@@ -1,72 +1,75 @@
-import {Component, inject, OnInit} from '@angular/core';
-import {AuthService} from "../../services/auth.service";
-import {CommonModule, DatePipe, NgIf} from "@angular/common";
-import {Router, RouterLink} from "@angular/router";
-import {ICity, IClient, IGender, IOrder} from "../../services/entities";
-import {ClientService} from "../../services/client.service";
-import {map, Observable, of} from "rxjs";
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
-import {SupportService} from "../../services/support.service";
+import { Component, inject, OnInit } from '@angular/core';
+import { AuthService } from "../../services/auth.service";
+import { CommonModule, DatePipe } from "@angular/common";
+import { Router } from "@angular/router";
+import { ICity, IClient, IGender, IOrder } from "../../services/entities";
+import { ClientService } from "../../services/client.service";
+import { Observable } from "rxjs";
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
+import { SupportService } from "../../services/support.service";
 import { Modal } from 'bootstrap';
-import {ToastrService} from "ngx-toastr";
+import { ToastrService } from "ngx-toastr";
 
 @Component({
   selector: 'app-client-profile',
   standalone: true,
   imports: [
-    NgIf,
-    RouterLink,
     CommonModule,
     ReactiveFormsModule,
-    DatePipe,
   ],
   templateUrl: './client-profile.component.html',
-  styleUrl: './client-profile.component.css'
+  styleUrls: ['./client-profile.component.css']
 })
-
 export class ClientProfileComponent implements OnInit {
-  authService = inject(AuthService);
-  clientService = inject(ClientService);
-  router = inject(Router);
-  formBuilder = inject(FormBuilder);
-  supportService = inject(SupportService);
-  datePipe = inject(DatePipe);
-  toastr = inject(ToastrService);
+  // Services Injection
+  private authService = inject(AuthService);
+  private clientService = inject(ClientService);
+  private router = inject(Router);
+  private formBuilder = inject(FormBuilder);
+  private supportService = inject(SupportService);
+  private datePipe = inject(DatePipe);
+  private toastr = inject(ToastrService);
 
+  // Component Properties
   clientJwt: any;
   $client: Observable<IClient> | undefined;
   client: IClient | undefined;
-
   showCompletedOrders: boolean = false;
   editProfileForm: FormGroup | undefined;
   cities: ICity[] = [];
   genders: IGender[] = [];
   changePassword: boolean = false;
-  private editProfileModal: Modal | null = null;
-  private formReady: boolean = false;
 
+  private editProfileModal: Modal | null = null;
+  protected filteredOrders: IOrder[] = [];
 
   ngOnInit() {
+    // Fetch Cities and Genders
     this.supportService.getAllCities().subscribe(cities => this.cities = cities);
     this.supportService.getAllGenders().subscribe(genders => this.genders = genders);
 
+    // Fetch Client Data
     this.clientJwt = this.authService.getCurrentUser();
     if (this.clientJwt && this.clientJwt.id) {
       this.$client = this.clientService.getClientById(this.clientJwt.id);
       this.$client.subscribe(client => {
+        this.client = client;
         this.initForm(client);
+        this.filterOrders(); // Initialize filteredOrders
       });
     } else {
       console.error('No valid client JWT found');
       this.router.navigate(['/login']);
     }
 
+    // Initialize Modal
     const modalElement = document.getElementById('editProfileModal');
     if (modalElement) {
       this.editProfileModal = new Modal(modalElement);
     }
   }
 
+  // Initialize Edit Profile Form
   initForm(client: IClient) {
     const formattedDate = this.datePipe.transform(client.birthdate, 'dd/MM/yyyy');
 
@@ -82,28 +85,26 @@ export class ClientProfileComponent implements OnInit {
       newPassword: ['', [Validators.minLength(8)]]
     });
 
+    // Toggle Password Fields Based on Change Password Switch
     this.editProfileForm.get('changePassword')?.valueChanges.subscribe(value => {
       this.changePassword = value;
+      const newPasswordControl = this.editProfileForm?.get('newPassword');
       if (value) {
-        this.editProfileForm?.get('newPassword')?.setValidators([Validators.required, Validators.minLength(8)]);
+        newPasswordControl?.setValidators([Validators.required, Validators.minLength(8)]);
       } else {
-        this.editProfileForm?.get('newPassword')?.clearValidators();
-        this.editProfileForm?.get('newPassword')?.setValue('');
+        newPasswordControl?.clearValidators();
+        newPasswordControl?.setValue('');
       }
-      this.editProfileForm?.get('newPassword')?.updateValueAndValidity();
+      newPasswordControl?.updateValueAndValidity();
     });
-
-    this.formReady = true;
   }
 
+  // Open Edit Profile Modal
   openEditModal() {
-    if (this.formReady) {
-      this.editProfileModal?.show();
-    } else {
-      console.error('Form is not ready yet');
-    }
+    this.editProfileModal?.show();
   }
 
+  // Submit Edit Profile Form
   onSubmit() {
     if (this.editProfileForm && this.editProfileForm.valid && this.clientJwt) {
       const formValue = this.editProfileForm.getRawValue();
@@ -121,44 +122,34 @@ export class ClientProfileComponent implements OnInit {
         updatedClient.password = formValue.newPassword;
       }
 
-      if (!updatedClient.name || !updatedClient.surname || !updatedClient.email || !updatedClient.address || !updatedClient.city) {
-        this.toastr.error('Veuillez remplir tous les champs obligatoires', 'Erreur de validation',
-          {
-            timeOut: 3000,
-            progressBar: true,
-          }
-          );
-        return;
-      }
-
       this.clientService.updateClient(this.clientJwt.id, updatedClient).subscribe(
         (client) => {
-          console.log('Client updatedClient', updatedClient);
           console.log('Client updated:', client);
-          if (this.$client) {
-            this.$client = this.clientService.getClientById(this.clientJwt.id);
-          }
+          // Refresh Client Data
+          this.$client = this.clientService.getClientById(this.clientJwt.id);
+          this.$client.subscribe(updatedClient => {
+            this.client = updatedClient;
+            this.filterOrders();
+          });
+          // Close Modal and Show Success Message
           this.editProfileModal?.hide();
-          this.toastr.success('Votre profil a été mis à jour avec succès', 'Mise à jour réussie',
-            {
-              timeOut: 3000,
-              progressBar: true,
-            }
-            );
+          this.toastr.success('Votre profil a été mis à jour avec succès', 'Mise à jour réussie', {
+            timeOut: 3000,
+            progressBar: true,
+          });
         },
         (error) => {
           console.error('Error updating client:', error);
-          this.toastr.error('Une erreur s\'est produite lors de la mise à jour du profil', 'Erreur',
-            {
-              timeOut: 3000,
-              progressBar: true,
-            }
-            );
+          this.toastr.error('Une erreur s\'est produite lors de la mise à jour du profil', 'Erreur', {
+            timeOut: 3000,
+            progressBar: true,
+          });
         }
       );
     }
   }
 
+  // Compare Functions for Select Inputs
   compareCity(c1: any, c2: any): boolean {
     return c1 && c2 ? c1.id === c2.id : c1 === c2;
   }
@@ -167,13 +158,33 @@ export class ClientProfileComponent implements OnInit {
     return g1 && g2 ? g1.id === g2.id : g1 === g2;
   }
 
-  getFilteredOrders(): Observable<IOrder[]> {
-    return this.$client ? this.$client.pipe(
-      map(client => (client?.orders || []).filter(order => {
-        const isCompleted = order.orderStatus.name === 'Livré';
-        return this.showCompletedOrders ? isCompleted : !isCompleted;
-      }))
-    ) : of([]);
+  // Filter and Sort Orders
+  filterOrders() {
+    if (this.client && this.client.orders) {
+      this.filteredOrders = this.client.orders
+        .filter(order => {
+          const isCompleted: boolean = order.orderStatus.name === 'Livré';
+          return this.showCompletedOrders === isCompleted;
+        })
+        .sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
+    } else {
+      this.filteredOrders = [];
+    }
   }
 
+  // Toggle Between Ongoing and Completed Orders
+  toggleOrdersView() {
+    this.showCompletedOrders = !this.showCompletedOrders;
+    this.filterOrders();
+  }
+
+  // TrackBy Function for Orders
+  trackOrderId(index: number, order: IOrder): number {
+    return order.id;
+  }
+
+  // TrackBy Function for Items
+  trackItemId(index: number, item: any): number {
+    return item.id;
+  }
 }
