@@ -23,7 +23,7 @@
             <div class="col">
               <div class="card h-100 shadow rounded-4 p-2 pb-3">
                 <div class="card-body">
-                  <h5 class="card-title">Commande #{{ order.id }} <span *ngIf="order.express" class="badge bg-primary-custom">EXPRESS</span></h5>
+                  <h5 class="card-title">Commande #{{ order.id }} <span *ngIf="order.express" class="badge bg-primary-custom rounded-pill">EXPRESS</span></h5>
                   <p class="card-text">Date de création : {{ order.created | date:'dd/MM/yyyy HH:mm' }}</p>
                   <h6 class="card-subtitle mb-1 text-muted fw-bold">Articles :</h6>
                   <ul class="list-group list-group-flush mb-1">

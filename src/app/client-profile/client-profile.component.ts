@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { AuthService } from "../../services/auth.service";
 import { CommonModule, DatePipe } from "@angular/common";
-import { Router } from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 import { ICity, IClient, IGender, IOrder } from "../../services/entities";
 import { ClientService } from "../../services/client.service";
 import { Observable } from "rxjs";
@@ -9,6 +9,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angula
 import { SupportService } from "../../services/support.service";
 import { Modal } from 'bootstrap';
 import { ToastrService } from "ngx-toastr";
+import {LeadingZerosPipe} from "../../pipes/leading-zeros.pipe";
 
 @Component({
   selector: 'app-client-profile',
@@ -16,6 +17,8 @@ import { ToastrService } from "ngx-toastr";
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    LeadingZerosPipe,
+    RouterLink,
   ],
   templateUrl: './client-profile.component.html',
   styleUrls: ['./client-profile.component.css']
@@ -187,4 +190,7 @@ export class ClientProfileComponent implements OnInit {
   trackItemId(index: number, item: any): number {
     return item.id;
   }
+
+  protected readonly localStorage = localStorage;
+  protected readonly JSON = JSON;
 }

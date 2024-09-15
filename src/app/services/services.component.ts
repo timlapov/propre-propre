@@ -1,15 +1,27 @@
-import {ChangeDetectorRef, Component, computed, inject, OnInit, signal} from '@angular/core';
-import {combineLatest, map, Observable, tap} from "rxjs";
-import {CartItem, ICategory, ICoefficients, IOrderStatus, IService, ISubcategory} from "../../services/entities";
+// services.component.ts
+import { ChangeDetectorRef, Component, computed, inject, OnInit, ViewChild } from '@angular/core';
+import {combineLatest, map, Observable, of, Subscription, tap, throwError} from "rxjs";
+import {
+  CartItem,
+  ICategory,
+  IClient,
+  ICoefficients,
+  IOrderStatus,
+  IService,
+  ISubcategory
+} from "../../services/entities";
 import { ServicesDataService } from "../../services/services-data.service";
-import {AsyncPipe, CommonModule, NgClass, NgFor} from "@angular/common";
+import { AsyncPipe, CommonModule, NgClass, NgFor } from "@angular/common";
 import { SubcategoryService } from "../../services/subcategory.service";
-import {FormsModule} from "@angular/forms";
-import {AuthService} from "../../services/auth.service";
-import {Router} from "@angular/router";
-import {OrderService} from "../../services/order.service";
-import {SupportService} from "../../services/support.service";
-
+import { FormsModule } from "@angular/forms";
+import { AuthService } from "../../services/auth.service";
+import { Router } from "@angular/router";
+import { OrderService } from "../../services/order.service";
+import { SupportService } from "../../services/support.service";
+import { finalize, timeout, catchError } from 'rxjs/operators';
+import { ToastrService } from "ngx-toastr";
+import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-modal.component';
+import {ClientService} from "../../services/client.service"; // Adjust the path accordingly
 
 @Component({
   selector: 'app-services',
@@ -20,9 +32,10 @@ import {SupportService} from "../../services/support.service";
     NgClass,
     FormsModule,
     CommonModule,
+    ConfirmationModalComponent // Import the modal component
   ],
   templateUrl: './services.component.html',
-  styleUrl: './services.component.css'
+  styleUrls: ['./services.component.css']
 })
 export class ServicesComponent implements OnInit {
   private servicesDataService = inject(ServicesDataService);
@@ -32,14 +45,22 @@ export class ServicesComponent implements OnInit {
   private orderService = inject(OrderService);
   private supportService = inject(SupportService);
   private cdr = inject(ChangeDetectorRef);
+  private toastr = inject(ToastrService);
+  private clientService = inject(ClientService);
+
+  @ViewChild('confirmationModal') confirmationModal!: ConfirmationModalComponent;
 
   cart: CartItem[] = [];
   cartItemOptions: { [subcategoryId: number]: { ironing: boolean, perfuming: boolean } } = {};
   servicesMap: { [id: number]: IService } = {};
-
   orderStatuses: IOrderStatus[] = [];
   initialOrderStatus: IOrderStatus | null = null;
   coefficients: ICoefficients | null = null;
+  customerAddress: string = '';
+  activeServiceId: number | null = null;
+  isExpress: boolean = false;
+  isPlacingOrder: boolean = false;
+  orderTimeoutSubscription!: Subscription;
 
   services$: Observable<IService[]> = this.servicesDataService.getAllServices().pipe(
     tap(services => {
@@ -50,7 +71,6 @@ export class ServicesComponent implements OnInit {
   );
   categories$: Observable<ICategory[]> = this.subcategoryService.getAllCategories();
   subcategories$: Observable<ISubcategory[]> = this.subcategoryService.getAllSubcategories();
-
   categoriesWithSubcategories$: Observable<(ICategory & { subcategories: ISubcategory[] })[]> = combineLatest([
     this.categories$,
     this.subcategories$
@@ -63,9 +83,6 @@ export class ServicesComponent implements OnInit {
     }),
     tap(result => console.log('Categories with subcategories:', result))
   );
-
-  activeServiceId: number | null = null;
-  isExpress: boolean = false;
 
   ngOnInit() {
     this.services$.subscribe(
@@ -93,7 +110,9 @@ export class ServicesComponent implements OnInit {
       this.coefficients = coefficients;
       console.log('Coefficients:', this.coefficients);
     });
-    console.log(this.coefficients);
+    if (this.authService.isLogged()) {
+      this.fetchCustomerAddress();
+    }
   }
 
   setActiveService(serviceId: number) {
@@ -166,13 +185,31 @@ export class ServicesComponent implements OnInit {
 
   placeOrder() {
     if (this.authService.isLogged()) {
-      this.createOrder();
+      this.openConfirmationModal();
     } else {
       this.router.navigate(['/login']);
     }
   }
 
-  createOrder() {
+  openConfirmationModal() {
+    if (this.confirmationModal) {
+      this.confirmationModal.open();
+    }
+  }
+
+  onAddressConfirmed() {
+    // User confirmed the address, proceed with placing the order
+    this.initiateOrderPlacement();
+  }
+
+  onAddressModify() {
+    // User chose to modify the address, redirect to profile
+    this.router.navigate(['/client/profile']);
+  }
+
+  initiateOrderPlacement() {
+    this.isPlacingOrder = true; // Disable button and show spinner
+
     const orderData = {
       orderStatus: `/api/order_statuses/${this.initialOrderStatus?.id}`,
       client: `/api/clients/${this.authService.getClientId()}`,
@@ -186,14 +223,36 @@ export class ServicesComponent implements OnInit {
       express: this.isExpress
     };
 
-    this.orderService.createOrder(orderData).subscribe(
+    // Start the order creation process with a 10-second timeout
+    this.orderService.createOrder(orderData).pipe(
+      timeout(10000), // 10 seconds timeout
+      catchError(err => {
+        if (err.name === 'TimeoutError') {
+          this.toastr.error('La commande ne peut pas être traitée actuellement. Veuillez réessayer plus tard.', 'Erreur de traitement',
+            { timeOut: 5000, progressBar: true });
+        } else {
+          this.toastr.error('Une erreur est survenue lors de la création de la commande.', 'Erreur',
+            { timeOut: 5000, progressBar: true });
+        }
+        this.isPlacingOrder = false; // Re-enable button
+        return of(null); // Return observable to complete the stream
+      }),
+      finalize(() => {
+        this.isPlacingOrder = false; // Re-enable button in all cases
+      })
+    ).subscribe(
       response => {
-        // Order created successfully
-        this.cart = [];
-        this.saveCartToLocalStorage();
-        this.router.navigate(['/client/profile']);
+        if (response) {
+          // Order created successfully
+          this.toastr.success('Commande passée avec succès. Vous pouvez payer sur votre page de profil ou en espèces lors de la livraison.', 'Succès',
+            { timeOut: 10000, progressBar: true });
+          this.cart = [];
+          this.saveCartToLocalStorage();
+          this.router.navigate(['/client/profile']);
+        }
       },
       error => {
+        // This block might not be necessary due to catchError, but kept for completeness
         console.error('Error creating order:', error);
       }
     );
@@ -247,6 +306,28 @@ export class ServicesComponent implements OnInit {
     }
     price *= item.quantity;
     return price;
+  }
+
+  fetchCustomerAddress() {
+    const clientId = this.authService.getClientId();
+    if (clientId === null) {
+      console.error('Client ID is null. User might not be properly authenticated.');
+      return;
+    }
+
+    this.clientService.getClientById(clientId).pipe(
+      catchError(error => {
+        console.error('Erreur lors de la récupération des informations du client:', error);
+        return of(null); // Continue without the address
+      })
+    ).subscribe((client: IClient | null) => {
+      if (client) {
+        this.customerAddress = `${client.address}, ${client.city?.name}`;
+        console.log('Adresse du client récupérée:', this.customerAddress);
+      } else {
+        this.customerAddress = 'Adresse non disponible';
+      }
+    });
   }
 
 }

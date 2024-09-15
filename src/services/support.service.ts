@@ -33,7 +33,13 @@ export class SupportService {
 
   getServiceCoefficients() {
     return this.http.get<HydraCollection<ICoefficients>>(`${this.url}api/service_coefficientss`).pipe(
-      map(response => response['hydra:member'][0])
+      map(response => {
+        const members = response['hydra:member'];
+        if (members.length === 0) {
+          throw new Error('No service coefficients found');
+        }
+        return members[members.length - 1];
+      })
     );
   }
 

@@ -10,13 +10,15 @@ import {EmployeeDashboardComponent} from "./employee-dashboard/employee-dashboar
 import {ContactComponent} from "./contact/contact.component";
 import {Error404Component} from "./error404/error404.component";
 import {roleGuard} from "../services/guards/role.guard";
+import {AuthService} from "../services/auth.service";
+import {servicesGuard} from "../services/guards/services.guard";
 
 export const routes: Routes = [
   { path: '', component: LayoutComponent,
   children: [
     { path: '', component: HomeComponent },
     { path: 'login', component: LoginComponent },
-    { path: 'services', component: ServicesComponent },
+    { path: 'services', component: ServicesComponent, canActivate: [servicesGuard] },
     { path: 'client/profile', component: ClientProfileComponent, canActivate: [roleGuard], data: { requiredRole: 'ROLE_USER' }  },
     { path: 'client/registration', component: RegistrationComponent },
     { path: 'employee/dashboard', component: EmployeeDashboardComponent, canActivate: [roleGuard], data: { requiredRole: 'ROLE_EMPLOYEE' } },

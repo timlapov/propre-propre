@@ -20,6 +20,7 @@ export interface IClient {
   gender: IGender | null;
   password: string;
   orders: IOrder[];
+  roles: string[];
 }
 
 export interface ICountry {

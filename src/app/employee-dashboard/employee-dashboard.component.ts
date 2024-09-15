@@ -63,7 +63,7 @@ export class EmployeeDashboardComponent implements OnInit {
             timeOut: 3000,
             progressBar: true,
           });
-          // Обновить список заказов или состояние компонента
+          window.location.reload();
         },
         (error) => {
           console.error('Error updating order status', error);

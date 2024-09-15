@@ -5,6 +5,7 @@ import {IOrder} from "./entities";
 import {environment} from "../environments/environment";
 import {HydraCollection} from "./auth";
 import {AuthService} from "./auth.service";
+import {ToastrService} from "ngx-toastr";
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +13,8 @@ import {AuthService} from "./auth.service";
 export class OrderService {
   private apiUrl = environment.apiUrl;
   private authService = inject(AuthService);
-
-  constructor(private http: HttpClient) { }
+  private http = inject(HttpClient);
+  private toastr = inject(ToastrService);
 
   getOrders(params: { [key: string]: string | number | boolean }): Observable<IOrder[]> {
     let httpParams = new HttpParams();

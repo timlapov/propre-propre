@@ -70,3 +70,18 @@ body {
 .form-check-input:not(:disabled):not(:checked):focus {
   border-color: var(--primary);
 }
+
+/* ALERTS */
+.alert-primary-custom {
+  color: var(--dark);
+  background-color: #e8e8f9;
+  border-color: #d4d4f5;
+}
+
+.alert-primary-custom hr {
+  border-top-color: #bfbff1;
+}
+
+.alert-primary-custom .alert-link {
+  color: var(--primary);
+}

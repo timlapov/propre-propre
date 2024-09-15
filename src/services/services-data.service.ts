@@ -13,9 +13,6 @@ export class ServicesDataService {
 
   constructor(private http: HttpClient) { }
 
-  // getAllServices(): Observable<IService[]> {
-  //   return this.http.get<IService[]>(`${this.url}/services`)
-  // }
   getAllServices(): Observable<IService[]> {
     return this.http.get<HydraCollection<IService>>(`${this.url}api/services`).pipe(
       map(response => response['hydra:member'])
