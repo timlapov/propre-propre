@@ -32,7 +32,7 @@ export class SupportService {
   }
 
   getServiceCoefficients() {
-    return this.http.get<HydraCollection<ICoefficients>>(`${this.url}api/service_coefficientss`).pipe(
+    return this.http.get<HydraCollection<ICoefficients>>(`${this.url}api/service_coefficients`).pipe(
       map(response => {
         const members = response['hydra:member'];
         if (members.length === 0) {
