@@ -4,38 +4,38 @@
   <div class="col-12 col-lg-8 order-1 order-lg-1">
 <!--    NAVBAR START    -->
     <div class="row navbar-services sticky-top">
-      <div class="w-100">
-        <ul class="nav nav-pills mb-2 justify-content-between" id="pills-tab" role="tablist">
-          @for (service of services$ | async; track service.id) {
-            <li class="nav-item">
-              <button class="nav-link px-3"
-                      [class.active]="service.id === activeServiceId"
-                      id="pills-{{service.id}}-tab"
-                      [attr.data-bs-toggle]="'pill'"
-                      [attr.data-bs-target]="'#pills-' + service.id"
-                      type="button"
-                      role="tab"
-                      [attr.aria-controls]="'pills-' + service.id"
-                      [attr.aria-selected]="service.id === activeServiceId"
-                      (click)="setActiveService(service.id)">
-                {{service.name}}
-              </button>
-            </li>
-          }
-        </ul>
-        <div class="tab-content" id="pills-tabContent">
-          @for (service of services$ | async; track service.id) {
-            <div class="tab-pane fade service-description text-primary-custom text-center"
-                 [class.show]="service.id === activeServiceId"
-                 [class.active]="service.id === activeServiceId"
-                 id="pills-{{service.id}}"
-                 [attr.aria-labelledby]="'pills-' + service.id + '-tab'">
-              {{service.description}}
-            </div>
-          }
-        </div>
+    <div class="w-100">
+      <ul class="nav nav-pills justify-content-between" id="pills-tab" role="tablist">
+        @for (service of services$ | async; track service.id) {
+          <li class="nav-item">
+            <button class="nav-link px-3"
+                    [class.active]="service.id === activeServiceId"
+                    id="pills-{{service.id}}-tab"
+                    [attr.data-bs-toggle]="'pill'"
+                    [attr.data-bs-target]="'#pills-' + service.id"
+                    type="button"
+                    role="tab"
+                    [attr.aria-controls]="'pills-' + service.id"
+                    [attr.aria-selected]="service.id === activeServiceId"
+                    (click)="setActiveService(service.id)">
+              {{service.name}}
+            </button>
+          </li>
+        }
+      </ul>
+      <div class="tab-content" id="pills-tabContent">
+        @for (service of services$ | async; track service.id) {
+          <div class="tab-pane fade service-description text-dark text-center bg-white bg-opacity-75 bg-blur rounded-bottom mx-4"
+               [class.show]="service.id === activeServiceId"
+               [class.active]="service.id === activeServiceId"
+               id="pills-{{service.id}}"
+               [attr.aria-labelledby]="'pills-' + service.id + '-tab'">
+            {{service.description}}
+          </div>
+        }
       </div>
     </div>
+  </div>
 <!--    NAVBAR END -->
 
 <!--    LIST OF CATEGORIES START-->

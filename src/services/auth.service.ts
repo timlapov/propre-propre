@@ -17,12 +17,19 @@ export class AuthService {
   }
 
   login(credentials: { email: string; password: string }): Observable<IToken> {
-    return this.http.post<IToken>(`${this.url}api/login`, credentials);
+    return this.http.post<IToken>(`${this.url}api/login`, credentials).pipe(
+      tap(tokenData => this.saveTokens(tokenData.token, tokenData.refresh_token))
+    );
   }
 
   refreshToken(): Observable<IToken> {
-    return this.http.post<IToken>(`${this.url}api/token/refresh`, {}).pipe(
-      tap(token => this.saveToken(token.token)),
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) {
+      this.logout();
+      return throwError('No refresh token available');
+    }
+    return this.http.post<IToken>(`${this.url}api/token/refresh`, { refresh_token: refreshToken }).pipe(
+      tap(tokenData => this.saveTokens(tokenData.token, tokenData.refresh_token)),
       catchError(error => {
         this.logout();
         return throwError(error);
@@ -30,8 +37,9 @@ export class AuthService {
     );
   }
 
-  saveToken(token: string): void {
+  saveTokens(token: string, refreshToken: string): void {
     localStorage.setItem('token', token);
+    localStorage.setItem('refreshToken', refreshToken);
   }
 
   isTokenExpired(): boolean {
@@ -58,8 +66,13 @@ export class AuthService {
     return localStorage.getItem('token');
   }
 
+  getRefreshToken(): string | null {
+    return localStorage.getItem('refreshToken');
+  }
+
   logout(): void {
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     this.router.navigate(['login']);
   }
 

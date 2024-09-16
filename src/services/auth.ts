@@ -10,6 +10,7 @@ export interface ICredentials {
 
 export interface IToken {
   token: string;
+  refresh_token: string;
   exp: number;
 }
 
