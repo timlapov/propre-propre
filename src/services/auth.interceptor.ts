@@ -47,7 +47,7 @@ export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn):
       if (error instanceof HttpErrorResponse && error.status === 401) {
         return handleUnauthorizedError(req, next, authService);
       }
-      return throwError(error);
+      return throwError(() => error);
     })
   );
 }
@@ -65,26 +65,31 @@ function addToken(request: HttpRequest<any>, token: string | null) {
 
 function handleUnauthorizedError(request: HttpRequest<any>, next: HttpHandlerFn, authService: AuthService): Observable<HttpEvent<any>> {
   if (!isRefreshing) {
+    console.log('Токен не обновляется. Попытка обновить токен.');
     isRefreshing = true;
     refreshTokenSubject.next(null);
 
     return authService.refreshToken().pipe(
       switchMap((token: IToken) => {
+        console.log('Токен успешно обновлен.');
         isRefreshing = false;
         refreshTokenSubject.next(token.token);
         return next(addToken(request, token.token));
       }),
       catchError((err) => {
+        console.error('Ошибка при обновлении токена:', err);
         isRefreshing = false;
         authService.logout();
-        return throwError(err);
+        return throwError(() => err);
       })
     );
   } else {
+    console.log('Токен уже обновляется. Ожидаем новый токен.');
     return refreshTokenSubject.pipe(
       filter(token => token != null),
       take(1),
       switchMap(token => {
+        console.log('Получен новый токен из refreshTokenSubject.');
         return next(addToken(request, token));
       })
     );

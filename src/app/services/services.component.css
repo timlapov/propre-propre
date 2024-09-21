@@ -98,9 +98,9 @@ service-description {
     padding-right: 15px; /* Уменьшаем отступ справа */
   }
 
-  .nav-pills {
-    border-radius: 8px; /* Уменьшаем скругление углов на маленьких экранах */
-  }
+  /*.nav-pills {*/
+  /*  border-radius: 8px; !* Уменьшаем скругление углов на маленьких экранах *!*/
+  /*}*/
 
   .nav-pills .nav-link {
     font-size: 0.9rem;
@@ -110,8 +110,8 @@ service-description {
 
 @media (max-width: 576px) {
   .nav-pills {
-    background-color: transparent;
-    border-radius: 0;
+    background-color: white;
+    border-radius: 5px;
     padding: 0;
     flex-wrap: wrap;
   }

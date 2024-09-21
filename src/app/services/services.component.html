@@ -46,7 +46,7 @@
           @for (subcategory of category.subcategories; track subcategory.id) {
             <div class="col">
               <div class="card h-100">
-                <img src="assets/images/placeholder-happiness.webp" class="card-img-top d-none d-sm-block" alt="{{subcategory.name}}">
+                <img src="{{environment.apiUrl}}/uploads/subcategories/{{subcategory.imageUrl}}" class="card-img-top d-none d-sm-block" alt="{{subcategory.name}}">
                 <div class="card-body d-flex flex-column">
                   <h5 class="card-title">{{subcategory.name}}</h5>
                   <div class="flex-grow-1">
@@ -159,13 +159,11 @@
         </div>
       </div>
 
-      <!-- Include the Confirmation Modal Component -->
-      <app-confirmation-modal
-        #confirmationModal
-        [address]="customerAddress"
-        (confirm)="onAddressConfirmed()"
-        (modify)="onAddressModify()">
-      </app-confirmation-modal>
+      <!-- Include the Confirmation Payment Method Modal Component -->
+      <app-payment-method-modal
+        #paymentMethodModal
+        (paymentMethodSelected)="onPaymentMethodSelected($event)">
+      </app-payment-method-modal>
 
     </div>
     <!-- CART END -->

@@ -50,6 +50,7 @@ export interface IItem {
   perfuming: boolean;
   subcategory: ISubcategory;
   service: IService;
+  quantity: number;
 }
 
 export interface IOrder {
@@ -62,11 +63,13 @@ export interface IOrder {
   employee: IEmployee | null;
   items: IItem[];
   totalPrice: number;
+  paymentMethod: 'cash' | 'card';
 }
 
 export interface IOrderStatus {
   id: number;
   name: string;
+  description: string;
 }
 
 export interface IService {

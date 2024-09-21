@@ -25,21 +25,27 @@ export class AuthService {
   refreshToken(): Observable<IToken> {
     const refreshToken = this.getRefreshToken();
     if (!refreshToken) {
+      console.warn('Отсутствует refresh token. Выполняется logout.');
       this.logout();
-      return throwError('No refresh token available');
+      return throwError(() => 'No refresh token available');
     }
+    console.log('Попытка обновления токена...');
     return this.http.post<IToken>(`${this.url}api/token/refresh`, { refresh_token: refreshToken }).pipe(
-      tap(tokenData => this.saveTokens(tokenData.token, tokenData.refresh_token)),
+      tap(tokenData => {
+        console.log('Токен обновлен:', tokenData);
+        this.saveTokens(tokenData.token, tokenData.refresh_token);
+      }),
       catchError(error => {
+        console.error('Ошибка при обновлении токена:', error);
         this.logout();
-        return throwError(error);
+        return throwError(() => error);
       })
     );
   }
 
   saveTokens(token: string, refreshToken: string): void {
     localStorage.setItem('token', token);
-    localStorage.setItem('refreshToken', refreshToken);
+    localStorage.setItem('refresh_token', refreshToken);
   }
 
   isTokenExpired(): boolean {
@@ -67,12 +73,20 @@ export class AuthService {
   }
 
   getRefreshToken(): string | null {
-    return localStorage.getItem('refreshToken');
+    return localStorage.getItem('refresh_token');
   }
 
+  // logout(): void {
+  //   localStorage.removeItem('token');
+  //   localStorage.removeItem('refreshToken');
+  //   this.router.navigate(['login']).then(() => {
+  //     window.location.reload(); // Ensure full reload to reset application state
+  //   });
+  // }
   logout(): void {
+    console.log('AuthService.logout() вызван');
     localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('refresh_token');
     this.router.navigate(['login']);
   }
 
@@ -92,12 +106,14 @@ export class AuthService {
   }
 
   getUserProfileRoute(): string {
-    const user = this.getCurrentUser();
-    if (user) {
-      if (user.roles.includes('ROLE_EMPLOYEE')) {
-        return '/employee/dashboard';
-      } else {
-        return '/client/profile';
+    if (this.isLogged()) {
+      const user = this.getCurrentUser();
+      if (user) {
+        if (user.roles.includes('ROLE_EMPLOYEE')) {
+          return '/employee/dashboard';
+        } else if (user.roles.includes('ROLE_USER')) {
+          return '/client/profile';
+        }
       }
     }
     return '/login';

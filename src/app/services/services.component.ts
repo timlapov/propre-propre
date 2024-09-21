@@ -1,4 +1,3 @@
-// services.component.ts
 import { ChangeDetectorRef, Component, computed, inject, OnInit, ViewChild } from '@angular/core';
 import {combineLatest, map, Observable, of, Subscription, tap, throwError} from "rxjs";
 import {
@@ -21,7 +20,9 @@ import { SupportService } from "../../services/support.service";
 import { finalize, timeout, catchError } from 'rxjs/operators';
 import { ToastrService } from "ngx-toastr";
 import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-modal.component';
-import {ClientService} from "../../services/client.service"; // Adjust the path accordingly
+import {ClientService} from "../../services/client.service";
+import {PaymentMethodModalComponent} from "../payment-method-modal/payment-method-modal.component";
+import {environment} from "../../environments/environment"; // Adjust the path accordingly
 
 @Component({
   selector: 'app-services',
@@ -32,7 +33,9 @@ import {ClientService} from "../../services/client.service"; // Adjust the path 
     NgClass,
     FormsModule,
     CommonModule,
-    ConfirmationModalComponent // Import the modal component
+    ConfirmationModalComponent,
+    PaymentMethodModalComponent,
+    // Import the modal component
   ],
   templateUrl: './services.component.html',
   styleUrls: ['./services.component.css']
@@ -48,7 +51,7 @@ export class ServicesComponent implements OnInit {
   private toastr = inject(ToastrService);
   private clientService = inject(ClientService);
 
-  @ViewChild('confirmationModal') confirmationModal!: ConfirmationModalComponent;
+  @ViewChild('paymentMethodModal') paymentMethodModal!: PaymentMethodModalComponent;
 
   cart: CartItem[] = [];
   cartItemOptions: { [subcategoryId: number]: { ironing: boolean, perfuming: boolean } } = {};
@@ -60,6 +63,7 @@ export class ServicesComponent implements OnInit {
   activeServiceId: number | null = null;
   isExpress: boolean = false;
   isPlacingOrder: boolean = false;
+  selectedPaymentMethod: 'cash' | 'card' = 'cash';
   orderTimeoutSubscription!: Subscription;
 
   services$: Observable<IService[]> = this.servicesDataService.getAllServices().pipe(
@@ -185,26 +189,21 @@ export class ServicesComponent implements OnInit {
 
   placeOrder() {
     if (this.authService.isLogged()) {
-      this.openConfirmationModal();
+      this.openPaymentMethodModal();
     } else {
       this.router.navigate(['/login']);
     }
   }
 
-  openConfirmationModal() {
-    if (this.confirmationModal) {
-      this.confirmationModal.open();
+  openPaymentMethodModal() {
+    if (this.paymentMethodModal) {
+      this.paymentMethodModal.open();
     }
   }
 
-  onAddressConfirmed() {
-    // User confirmed the address, proceed with placing the order
+  onPaymentMethodSelected(paymentMethod: 'cash' | 'card') {
+    this.selectedPaymentMethod = paymentMethod;
     this.initiateOrderPlacement();
-  }
-
-  onAddressModify() {
-    // User chose to modify the address, redirect to profile
-    this.router.navigate(['/client/profile']);
   }
 
   initiateOrderPlacement() {
@@ -218,9 +217,11 @@ export class ServicesComponent implements OnInit {
         'subcategory': `/api/subcategories/${item.subcategory.id}`,
         'service': `/api/services/${item.serviceId}`,
         'ironing': item.ironing,
-        'perfuming': item.perfuming
+        'perfuming': item.perfuming,
+        'quantity': item.quantity,
       })),
-      express: this.isExpress
+      express: this.isExpress,
+      paymentMethod: this.selectedPaymentMethod
     };
 
     // Start the order creation process with a 10-second timeout
@@ -330,4 +331,5 @@ export class ServicesComponent implements OnInit {
     });
   }
 
+  protected readonly environment = environment;
 }

@@ -61,7 +61,7 @@
     <div class="col-md-9">
       <div class="card rounded-4 shadow-lg">
         <h4 class="text-center m-2 mt-3">Liste des commandes</h4>
-        <ul class="nav nav-tabs p-2">
+        <ul class="nav nav-tabs">
           <li class="nav-item">
             <a class="nav-link" [class.active]="!showCompletedOrders" (click)="toggleOrdersView()">Commandes en cours</a>
           </li>
@@ -91,11 +91,13 @@
                 data-bs-parent="#ordersAccordion">
                 <div class="accordion-body">
                   <p><strong>Employé assigné:</strong> {{ order.employee?.name }} {{ order.employee?.surname }}</p>
+                  <p><strong>Mode de paiement :</strong> {{ order.paymentMethod === 'card' ? 'par carte' : 'par espèces' }} </p>
+                  <p><strong>Statut :</strong> {{ order.orderStatus.description }}</p>
                   <p *ngIf="order.completed"><strong>Date de complétion:</strong> {{ order.completed | date:'dd/MM/yyyy HH:mm' }}</p>
                   <h6>Articles et services:</h6>
                   <ul>
                     <li *ngFor="let item of order.items; trackBy: trackItemId">
-                      {{ item.subcategory.name }}
+                      {{ item.subcategory.name }} x{{ item.quantity }}
                       <br>
                       {{ item.service?.name || 'N/A' }}
                       <span *ngIf="item.ironing" class="badge bg-light me-1">
