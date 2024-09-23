@@ -20,7 +20,7 @@ export class ClientService {
     email: string,
     name: string,
     surname: string,
-    birthdate: Date | null,
+    birthdate: string | null,
     address: string,
     city: ICity | null,
     gender: IGender | null,
@@ -30,9 +30,7 @@ export class ClientService {
       email,
       name,
       surname,
-      birthdate: birthdate instanceof Date
-        ? birthdate.toISOString().split('T')[0]
-        : birthdate,
+      birthdate: birthdate ? new Date(birthdate).toISOString().split('T')[0] : null,
       address,
       city: city ? `/api/cities/${city.id}` : null,
       gender: gender ? `/api/genders/${gender.id}` : null,
@@ -67,6 +65,14 @@ export class ClientService {
     headers = headers.set('Accept', 'application/ld+json');
 
     return this.http.patch<IClient>(`${this.url}api/clients/${id}`, clientData, { headers });
+  }
+
+  requestPasswordReset(email: string): Observable<any> {
+    return this.http.post(`${this.url}api/reset-password`, { email });
+  }
+
+  resetPassword(token: string, password: string): Observable<any> {
+    return this.http.post(`${this.url}api/reset-password/reset`, { token, password });
   }
 
 }

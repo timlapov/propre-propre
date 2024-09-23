@@ -7,3 +7,7 @@ label {
 h1 {
   color: var(--dark);
 }
+
+.nav-link {
+  cursor: pointer;
+}

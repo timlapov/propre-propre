@@ -19,7 +19,6 @@ import { OrderService } from "../../services/order.service";
 import { SupportService } from "../../services/support.service";
 import { finalize, timeout, catchError } from 'rxjs/operators';
 import { ToastrService } from "ngx-toastr";
-import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-modal.component';
 import {ClientService} from "../../services/client.service";
 import {PaymentMethodModalComponent} from "../payment-method-modal/payment-method-modal.component";
 import {environment} from "../../environments/environment"; // Adjust the path accordingly
@@ -33,9 +32,7 @@ import {environment} from "../../environments/environment"; // Adjust the path a
     NgClass,
     FormsModule,
     CommonModule,
-    ConfirmationModalComponent,
     PaymentMethodModalComponent,
-    // Import the modal component
   ],
   templateUrl: './services.component.html',
   styleUrls: ['./services.component.css']
