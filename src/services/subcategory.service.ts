@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {environment} from "../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {map, Observable} from "rxjs";
-import {ICategory, IService, ISubcategory} from "./entities";
+import {ICategory, ISubcategory} from "./entities";
 
 interface HydraCollection<T> {
   'hydra:member': T[];
@@ -13,10 +13,8 @@ interface HydraCollection<T> {
   providedIn: 'root'
 })
 export class SubcategoryService {
-
-  url = environment.apiUrl;
-
-  constructor(private http: HttpClient) { }
+  private url = environment.apiUrl;
+  http = inject(HttpClient);
 
   getAllCategories(): Observable<ICategory[]> {
     return this.http.get<HydraCollection<ICategory>>(`${this.url}api/categories`).pipe(

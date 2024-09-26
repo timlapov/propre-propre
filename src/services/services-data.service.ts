@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../environments/environment";
-import {HydraCollection, IToken} from "./auth";
+import {HydraCollection, ITokenResponse} from "./auth";
 import {IService} from "./entities";
 import {map, Observable} from "rxjs";
 
@@ -9,9 +9,8 @@ import {map, Observable} from "rxjs";
   providedIn: 'root'
 })
 export class ServicesDataService {
-  url = environment.apiUrl;
-
-  constructor(private http: HttpClient) { }
+  private url = environment.apiUrl;
+  http = inject(HttpClient);
 
   getAllServices(): Observable<IService[]> {
     return this.http.get<HydraCollection<IService>>(`${this.url}api/services`).pipe(

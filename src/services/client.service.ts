@@ -8,7 +8,7 @@ import {Observable} from "rxjs";
   providedIn: 'root'
 })
 export class ClientService {
-  url = environment.apiUrl;
+  private url = environment.apiUrl;
   private headers = new HttpHeaders({
     'Content-Type': 'application/ld+json',
     'Accept': 'application/ld+json'
@@ -50,20 +50,15 @@ export class ClientService {
       gender: client.gender ? `/api/genders/${client.gender.id}` : undefined
     };
 
-    const knownKeys: (keyof IClient)[] = ['id', 'email', 'name', 'surname', 'birthdate', 'address', 'city', 'gender', 'password'];
-    knownKeys.forEach(key => {
-      if (clientData[key] === undefined) {
-        delete clientData[key];
+    // Remove undefined properties from clientData
+    Object.keys(clientData).forEach(key => {
+      if (clientData[key as keyof IClient] === undefined) {
+        delete clientData[key as keyof IClient];
       }
     });
 
-    let headers = new HttpHeaders();
-    this.headers.keys().forEach(key => {
-      headers = headers.set(key, this.headers.get(key) || '');
-    });
-    headers = headers.set('Content-Type', 'application/merge-patch+json');
-    headers = headers.set('Accept', 'application/ld+json');
-
+    // Set headers for PATCH request
+    const headers = this.headers.set('Content-Type', 'application/merge-patch+json');
     return this.http.patch<IClient>(`${this.url}api/clients/${id}`, clientData, { headers });
   }
 

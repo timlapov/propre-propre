@@ -2,7 +2,7 @@ import {Component, inject, ViewChild} from '@angular/core';
 import {AuthService} from "../../services/auth.service";
 import {Router, RouterLink} from "@angular/router";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
-import {ICredentials, IToken} from "../../services/auth";
+import {ICredentials, ITokenResponse} from "../../services/auth";
 import {environment} from "../../environments/environment";
 import {ToastrService} from "ngx-toastr";
 import {PasswordResetModalComponent} from "../password-reset-modal/password-reset-modal.component";

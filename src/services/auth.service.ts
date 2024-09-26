@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {Observable, tap, throwError} from 'rxjs';
 import { Router } from '@angular/router';
-import {DecodedToken, IToken} from "./auth";
+import {IDecodedToken, ITokenResponse} from "./auth";
 import {jwtDecode} from "jwt-decode";
 import {environment} from "../environments/environment";
 import {catchError} from "rxjs/operators";
@@ -16,19 +16,18 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) {
   }
 
-  login(credentials: { email: string; password: string }): Observable<IToken> {
-    return this.http.post<IToken>(`${this.url}api/login`, credentials).pipe(
+  login(credentials: { email: string; password: string }): Observable<ITokenResponse> {
+    return this.http.post<ITokenResponse>(`${this.url}api/login`, credentials).pipe(
       tap(tokenData => this.saveTokens(tokenData.token, tokenData.refresh_token))
     );
   }
 
-  refreshToken(): Observable<IToken> {
+  refreshToken(): Observable<ITokenResponse> {
     const refreshToken = this.getRefreshToken();
     if (!refreshToken) {
       this.logout();
-      return throwError(() => 'No refresh token available');
     }
-    return this.http.post<IToken>(`${this.url}api/token/refresh`, { refresh_token: refreshToken }).pipe(
+    return this.http.post<ITokenResponse>(`${this.url}api/token/refresh`, { refresh_token: refreshToken }).pipe(
       tap(tokenData => {
         this.saveTokens(tokenData.token, tokenData.refresh_token);
       }),
@@ -47,8 +46,13 @@ export class AuthService {
   isTokenExpired(): boolean {
     const token = this.getToken();
     if (!token) return true;
-    const decodedToken = jwtDecode<IToken>(token);
-    return decodedToken.exp * 1000 < Date.now();
+    try {
+      const decodedToken = jwtDecode<IDecodedToken>(token);
+      return decodedToken.exp * 1000 < Date.now();
+    } catch (error) {
+      // If token decoding fails, consider it expired
+      return true;
+    }
   }
 
   isLogged(): boolean {
@@ -69,15 +73,16 @@ export class AuthService {
     this.router.navigate(['login']);
   }
 
-  getCurrentUser(): DecodedToken | null {
+  getCurrentUser(): IDecodedToken | null {
     const token = this.getToken();
     if (!token) return null;
     try {
-      return jwtDecode<DecodedToken>(token);
+      return jwtDecode<IDecodedToken>(token);
     } catch (error) {
       return null;
     }
   }
+
   hasRole(role: string): boolean {
     const user = this.getCurrentUser();
     return user ? user.roles.includes(role) : false;

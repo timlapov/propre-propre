@@ -1,14 +1,17 @@
+// Represents a category of items
 export interface ICategory {
   id: number;
   name: string;
 }
 
+// Represents a city with an associated country
 export interface ICity {
   id: number;
   name: string;
   country: ICountry;
 }
 
+// Represents a client in the system
 export interface IClient {
   id: number;
   email: string;
@@ -23,11 +26,13 @@ export interface IClient {
   roles: string[];
 }
 
+// Represents a country
 export interface ICountry {
   id: number;
   name: string;
 }
 
+// Represents an employee
 export interface IEmployee {
   id: number;
   email: string;
@@ -38,11 +43,13 @@ export interface IEmployee {
   orders: IOrder[];
 }
 
+// Represents a gender
 export interface IGender {
   id: number;
   name: string;
 }
 
+// Represents an item in an order
 export interface IItem {
   id: number;
   order_: string;
@@ -53,6 +60,7 @@ export interface IItem {
   quantity: number;
 }
 
+// Represents an order made by a client
 export interface IOrder {
   id: number;
   express: boolean;
@@ -66,12 +74,14 @@ export interface IOrder {
   paymentMethod: 'cash' | 'card';
 }
 
+// Represents the status of an order
 export interface IOrderStatus {
   id: number;
   name: string;
   description: string;
 }
 
+// Represents a service offered
 export interface IService {
   id: number;
   name: string;
@@ -79,6 +89,7 @@ export interface IService {
   price: number;
 }
 
+// Represents a subcategory of items
 export interface ISubcategory {
   id: number;
   name: string;
@@ -89,6 +100,7 @@ export interface ISubcategory {
   '@type': string;
 }
 
+// Represents an item in the shopping cart
 export interface CartItem {
   subcategory: ISubcategory;
   ironing: boolean;
@@ -97,6 +109,7 @@ export interface CartItem {
   serviceId: number;
 }
 
+// Represents service coefficients for pricing
 export interface ICoefficients {
   id: number;
   expressCoefficient: number;

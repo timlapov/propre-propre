@@ -8,13 +8,13 @@ export interface ICredentials {
   password: string;
 }
 
-export interface IToken {
+export interface ITokenResponse {
   token: string;
   refresh_token: string;
   exp: number;
 }
 
-export interface DecodedToken extends IToken {
+export interface IDecodedToken {
   id: number;
   email: string;
   roles: string[];

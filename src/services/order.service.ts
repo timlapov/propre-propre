@@ -37,16 +37,6 @@ export class OrderService {
     });
   }
 
-  getTotalItems(params: { [key: string]: string | number | boolean }): Observable<number> {
-    let httpParams = new HttpParams();
-    Object.keys(params).forEach(key => {
-      httpParams = httpParams.set(key, params[key].toString());
-    });
-    return this.http.get<HydraCollection<IOrder>>(this.apiUrl, { params: httpParams }).pipe(
-      map(response => response['hydra:totalItems'])
-    );
-  }
-
   updateOrderStatus(orderId: number, statusId: number): Observable<IOrder> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/merge-patch+json',
@@ -61,11 +51,9 @@ export class OrderService {
   }
 
   createOrder(orderData: any): Observable<IOrder> {
-    const token = this.authService.getToken();
     const headers = new HttpHeaders({
       'Content-Type': 'application/ld+json',
       'Accept': 'application/ld+json',
-      'Authorization': `Bearer ${token}`
     });
     return this.http.post<IOrder>(`${this.apiUrl}api/orders`, orderData, { headers });
   }

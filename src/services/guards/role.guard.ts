@@ -3,7 +3,7 @@ import { AuthService } from "../auth.service";
 import { inject } from "@angular/core";
 import { of } from 'rxjs';
 import { catchError, switchMap, map } from 'rxjs/operators';
-import {IToken} from "../auth";
+import {ITokenResponse} from "../auth";
 
 // Guard to protect routes based on user roles.
 // Checks if the user has the required role and handles token refresh if necessary.
@@ -23,7 +23,7 @@ export const roleGuard: CanActivateFn = (route, state) => {
   // If token exists and is expired, attempt to refresh it
   if (token && authService.isTokenExpired()) {
     return authService.refreshToken().pipe(
-      map((tokenData: IToken) => {
+      map((tokenData: ITokenResponse) => {
         // After refreshing, check authentication and role again
         if (authService.isLogged() && authService.hasRole(requiredRole)) {
           return true;

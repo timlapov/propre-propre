@@ -14,23 +14,28 @@ export class SupportService {
 
   constructor(private http: HttpClient) { }
 
+  // Retrieves all available cities
   getAllCities() {
     return this.http.get<HydraCollection<ICity>>(`${this.url}api/cities`).pipe(
       map(response => response['hydra:member'])
     );
   }
 
+  // Retrieves all available genders
   getAllGenders() {
     return this.http.get<HydraCollection<IGender>>(`${this.url}api/genders`).pipe(
       map(response => response['hydra:member'])
     );
   }
+
+  // Retrieves all order statuses
   getAllOrderStatuses() {
     return this.http.get<HydraCollection<IOrderStatus>>(`${this.url}api/order_statuses`).pipe(
       map(response => response['hydra:member'])
     );
   }
 
+  // Retrieves the latest service coefficients.
   getServiceCoefficients() {
     return this.http.get<HydraCollection<ICoefficients>>(`${this.url}api/service_coefficients`).pipe(
       map(response => {
