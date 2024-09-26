@@ -98,8 +98,8 @@
           <div *ngIf="cart.length > 0">
             <ul class="list-group">
 
-              <li class="list-group-item" *ngFor="let item of cart">
-                <div class="d-flex justify-content-between align-items-start">
+              <li class="list-group-item px-1" *ngFor="let item of cart">
+                <div class="d-flex justify-content-between align-items-center">
                   <!-- Left Side: Wrappable Text -->
                   <div>
                     {{ item.subcategory.name }} - {{ servicesMap[item.serviceId]?.name }}
@@ -119,15 +119,25 @@
                     </ng-container>
 
                     <!-- Quantity and Price -->
-                    <span class="ms-2">
+                    <span class="ms-2 text-nowrap">
                     x{{ item.quantity }} = {{ calculateItemPrice(item) | currency:'EUR' }}
                   </span>
+
+                    <!-- Decrease Quantity Button -->
+                    <div class="btn-group ms-2">
+                    <button class="btn btn-sm btn-outline-secondary" (click)="removeItemFromCart(item)" aria-label="Decrease Quantity">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
+                        <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/>
+                      </svg>
+                    </button>
                     <!-- Delete Button -->
-                    <button class="btn btn-sm btn-outline-danger ms-2" (click)="removeFromCart(item)" aria-label="Delete Item">
+                    <button class="btn btn-sm btn-outline-danger" (click)="removeFromCart(item)" aria-label="Delete Item">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
                         <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854z"/>
                       </svg>
                     </button>
+                    </div>
+
                   </div>
                 </div>
               </li>

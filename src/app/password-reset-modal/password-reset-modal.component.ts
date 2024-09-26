@@ -68,7 +68,6 @@ export class PasswordResetModalComponent implements AfterViewInit {
         this.passwordResetRequested.emit();
       },
       error: (error) => {
-        console.error('Password reset request error:', error);
         this.isSubmitting = false;
         // Handle the case when the user doesn't exist
         this.toastr.error(error.error.message || 'Une erreur est survenue lors de la demande de réinitialisation du mot de passe.', 'Erreur', {
@@ -78,4 +77,5 @@ export class PasswordResetModalComponent implements AfterViewInit {
       }
     });
   }
+
 }

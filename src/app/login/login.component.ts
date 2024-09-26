@@ -65,19 +65,22 @@ export class LoginComponent {
             });
             this.router.navigate(['/client/profile']);
           }
+        } else {
+          // Handle case when decodedToken is null
+          this.toastr.error('Erreur lors de la récupération des informations utilisateur.', 'Erreur');
         }
       },
       error: (error) => {
-        console.error('Login error:', error);
         this.isSubmitting = false;
         this.toastr.error('Veuillez réessayer', 'Erreur de saisie');
+        this.form.reset();
       }
     });
   }
 
-  openPasswordResetModal() { // 🆕
+  openPasswordResetModal() {
     if (this.passwordResetModal) {
-      this.passwordResetModal.open(); // 🆕
+      this.passwordResetModal.open();
     }
   }
 

@@ -75,7 +75,6 @@ export class PasswordResetComponent implements OnInit {
         this.router.navigate(['/login']);
       },
       error: (error) => {
-        console.error('Password reset error:', error);
         this.isSubmitting = false;
         const errorMessage = error.error?.message || 'Une erreur est survenue lors de la réinitialisation du mot de passe.';
         this.toastr.error(errorMessage, 'Erreur', {

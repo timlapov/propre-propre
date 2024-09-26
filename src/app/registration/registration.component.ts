@@ -10,7 +10,7 @@ import {ToastrModule, ToastrService} from "ngx-toastr";
 @Component({
   selector: 'app-registration',
   standalone: true,
-  imports: [ReactiveFormsModule, FormsModule, ReactiveFormsModule, CommonModule, ToastrModule,],
+  imports: [ReactiveFormsModule, FormsModule, CommonModule, ToastrModule],
   templateUrl: './registration.component.html',
   styleUrl: './registration.component.css'
 })
@@ -19,6 +19,7 @@ export class RegistrationComponent implements OnInit {
   cities: ICity[] = [];
   genders: IGender[] = [];
 
+  // Injecting services using Angular's inject function
   supportService = inject(SupportService);
   clientService = inject(ClientService);
   toastr = inject(ToastrService);
@@ -27,6 +28,7 @@ export class RegistrationComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
   ) {
+    // Initialize the registration form with validators
     this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
@@ -40,7 +42,9 @@ export class RegistrationComponent implements OnInit {
   }
 
   ngOnInit() {
+    // Fetch list of cities
     this.supportService.getAllCities().subscribe(cities => this.cities = cities);
+    // Fetch list of genders
     this.supportService.getAllGenders().subscribe(genders => this.genders = genders);
   }
 
@@ -58,25 +62,37 @@ export class RegistrationComponent implements OnInit {
         formValue.password
       ).subscribe(
         (newClient) => {
-          console.log('Пользователь успешно зарегистрирован:', newClient);
           this.toastr.success('Vous pouvez maintenant vous connecter.', 'Vous avez été enregistré avec succès ! ',
             {
               timeOut: 3500,
               progressBar: true,
             }
             );
+          // Navigate after toast message disappears
           setTimeout(() => {
             this.router.navigate(['/login']);
           });
         },
         (error) => {
-          console.error('Ошибка при регистрации:', error);
-          this.toastr.error('Un utilisateur ayant cette adresse électronique a déjà été enregistré. ', 'Erreur d\'inscription');
+          this.toastr.error('Un utilisateur ayant cette adresse électronique a déjà été enregistré. ', 'Erreur d\'inscription',
+            {
+              timeOut: 500,
+              progressBar: true,
+            });
         }
       );
+    } else {
+      // Mark all fields as touched to display validation errors
+      this.registerForm.markAllAsTouched();
+      this.toastr.error('Veuillez corriger les erreurs du formulaire.', 'Erreur de validation',
+        {
+          timeOut: 3500,
+          progressBar: true,
+        });
     }
   }
 
+  // Checks if all required fields are valid to enable the submit button
   get requiredFieldsValid(): boolean {
     const form = this.registerForm;
     return !!form &&

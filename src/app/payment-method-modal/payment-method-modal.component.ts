@@ -14,10 +14,11 @@ import {FormsModule} from "@angular/forms";
 export class PaymentMethodModalComponent implements AfterViewInit {
   @Output() paymentMethodSelected: EventEmitter<'cash' | 'card'> = new EventEmitter();
 
+  // ViewChild to get a reference to the modal template
   @ViewChild('paymentMethodModal') paymentMethodModal!: ElementRef;
   private modalInstance!: Modal;
 
-  selectedPaymentMethod: 'cash' | 'card' = 'cash';
+  selectedPaymentMethod: 'cash' | 'card' = 'card';
 
   ngAfterViewInit(): void {
     this.modalInstance = new Modal(this.paymentMethodModal.nativeElement, {

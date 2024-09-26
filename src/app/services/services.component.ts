@@ -1,5 +1,5 @@
-import { ChangeDetectorRef, Component, computed, inject, OnInit, ViewChild } from '@angular/core';
-import {combineLatest, map, Observable, of, Subscription, tap, throwError} from "rxjs";
+import { ChangeDetectorRef, Component, inject, OnInit, ViewChild } from '@angular/core';
+import { combineLatest, map, Observable, of, Subscription, tap } from "rxjs";
 import {
   CartItem,
   ICategory,
@@ -21,7 +21,7 @@ import { finalize, timeout, catchError } from 'rxjs/operators';
 import { ToastrService } from "ngx-toastr";
 import {ClientService} from "../../services/client.service";
 import {PaymentMethodModalComponent} from "../payment-method-modal/payment-method-modal.component";
-import {environment} from "../../environments/environment"; // Adjust the path accordingly
+import {environment} from "../../environments/environment";
 
 @Component({
   selector: 'app-services',
@@ -38,6 +38,7 @@ import {environment} from "../../environments/environment"; // Adjust the path a
   styleUrls: ['./services.component.css']
 })
 export class ServicesComponent implements OnInit {
+  // Injecting services using Angular's inject function
   private servicesDataService = inject(ServicesDataService);
   private subcategoryService = inject(SubcategoryService);
   private authService = inject(AuthService);
@@ -56,18 +57,19 @@ export class ServicesComponent implements OnInit {
   orderStatuses: IOrderStatus[] = [];
   initialOrderStatus: IOrderStatus | null = null;
   coefficients: ICoefficients | null = null;
-  customerAddress: string = '';
   activeServiceId: number | null = null;
   isExpress: boolean = false;
   isPlacingOrder: boolean = false;
   selectedPaymentMethod: 'cash' | 'card' = 'cash';
-  orderTimeoutSubscription!: Subscription;
 
   services$: Observable<IService[]> = this.servicesDataService.getAllServices().pipe(
     tap(services => {
       if (services.length > 0) {
         this.activeServiceId = services[0].id;
       }
+      services.forEach(service => {
+        this.servicesMap[service.id] = service;
+      });
     })
   );
   categories$: Observable<ICategory[]> = this.subcategoryService.getAllCategories();
@@ -81,52 +83,28 @@ export class ServicesComponent implements OnInit {
         ...category,
         subcategories: subcategories.filter(sub => sub.category === `/api/categories/${category.id}`)
       }));
-    }),
-    tap(result => console.log('Categories with subcategories:', result))
+    })
   );
 
   ngOnInit() {
-    this.services$.subscribe(
-      services => console.log('Received services:', services),
-      error => console.error('Error:', error)
-    );
-    this.categoriesWithSubcategories$.subscribe(
-      categories => console.log('Received categories:', categories),
-    );
-    this.subcategories$.subscribe(
-      subcategories => console.log('Received subcategories:', subcategories),
-      error => console.error('Error loading subcategories:', error)
-    );
     this.loadCartFromLocalStorage();
-    this.services$.subscribe(services => {
-      services.forEach(service => {
-        this.servicesMap[service.id] = service;
-      });
-    });
     this.supportService.getAllOrderStatuses().subscribe(statuses => {
       this.orderStatuses = statuses;
       this.initialOrderStatus = statuses[0];
     });
     this.supportService.getServiceCoefficients().subscribe(coefficients => {
       this.coefficients = coefficients;
-      console.log('Coefficients:', this.coefficients);
     });
-    if (this.authService.isLogged()) {
-      this.fetchCustomerAddress();
-    }
   }
 
   setActiveService(serviceId: number) {
     this.activeServiceId = serviceId;
-    console.log('Active service:', this.activeServiceId);
-    this.cdr.detectChanges(); // Use detectChanges to update the view immediately
   }
 
   addToCart(subcategory: ISubcategory) {
     const options = this.getCartItemOptions(subcategory.id);
     const ironing = options.ironing;
     const perfuming = options.perfuming;
-
     const existingCartItem = this.cart.find(item =>
       item.subcategory.id === subcategory.id &&
       item.ironing === ironing &&
@@ -145,13 +123,6 @@ export class ServicesComponent implements OnInit {
         serviceId: this.activeServiceId
       });
     }
-
-    // Reset options after adding to cart
-    this.cartItemOptions[subcategory.id] = {
-      ironing: false,
-      perfuming: false
-    };
-
     this.saveCartToLocalStorage();
   }
 
@@ -160,6 +131,18 @@ export class ServicesComponent implements OnInit {
     if (index > -1) {
       this.cart.splice(index, 1);
       this.saveCartToLocalStorage();
+    }
+  }
+
+  removeItemFromCart(item: CartItem): void {
+    const cartItem = this.cart.find(cartItem => cartItem === item);
+    if (cartItem) {
+      cartItem.quantity -= 1;
+      if (cartItem.quantity <= 0) {
+        this.removeFromCart(cartItem);
+      } else {
+        this.saveCartToLocalStorage();
+      }
     }
   }
 
@@ -242,16 +225,12 @@ export class ServicesComponent implements OnInit {
       response => {
         if (response) {
           // Order created successfully
-          this.toastr.success('Commande passée avec succès. Vous pouvez payer sur votre page de profil ou en espèces lors de la livraison.', 'Succès',
+          this.toastr.success('Commande passée avec succès. Notre employé vous contactera pour discuter de la livraison.', 'Succès',
             { timeOut: 10000, progressBar: true });
           this.cart = [];
           this.saveCartToLocalStorage();
           this.router.navigate(['/client/profile']);
         }
-      },
-      error => {
-        // This block might not be necessary due to catchError, but kept for completeness
-        console.error('Error creating order:', error);
       }
     );
   }
@@ -260,22 +239,12 @@ export class ServicesComponent implements OnInit {
     if (!this.coefficients || !this.activeServiceId) return 0;
 
     const options = this.getCartItemOptions(subcategory.id);
-    let price = subcategory.price_coefficient;
-
-    const service = this.servicesMap[this.activeServiceId];
-    if (service) {
-      price *= service.price;
-    }
-
-    if (options.ironing) {
-      price *= this.coefficients.ironingCoefficient;
-    }
-
-    if (options.perfuming) {
-      price *= this.coefficients.perfumingCoefficient;
-    }
-
-    return price;
+    return this.calculatePrice(
+      subcategory.price_coefficient,
+      this.activeServiceId,
+      options.ironing,
+      options.perfuming
+    );
   }
 
   getTotalPrice(): number {
@@ -290,43 +259,41 @@ export class ServicesComponent implements OnInit {
 
   calculateItemPrice(item: CartItem): number {
     if (!this.coefficients) return 0;
-    let price = item.subcategory.price_coefficient;
-    const service = this.servicesMap[item.serviceId];
+    return this.calculatePrice(
+      item.subcategory.price_coefficient,
+      item.serviceId,
+      item.ironing,
+      item.perfuming,
+      item.quantity
+    );
+  }
+
+  private calculatePrice(
+    basePriceCoefficient: number,
+    serviceId: number,
+    ironing: boolean,
+    perfuming: boolean,
+    quantity: number = 1
+  ): number {
+    let price = basePriceCoefficient;
+    const service = this.servicesMap[serviceId];
 
     if (service) {
       price *= service.price;
     }
-    if (item.ironing) {
-      price *= this.coefficients.ironingCoefficient;
+
+    if (ironing) {
+      price *= this.coefficients!.ironingCoefficient;
     }
-    if (item.perfuming) {
-      price *= this.coefficients.perfumingCoefficient;
+
+    if (perfuming) {
+      price *= this.coefficients!.perfumingCoefficient;
     }
-    price *= item.quantity;
+
+    price *= quantity;
     return price;
   }
 
-  fetchCustomerAddress() {
-    const clientId = this.authService.getClientId();
-    if (clientId === null) {
-      console.error('Client ID is null. User might not be properly authenticated.');
-      return;
-    }
-
-    this.clientService.getClientById(clientId).pipe(
-      catchError(error => {
-        console.error('Erreur lors de la récupération des informations du client:', error);
-        return of(null); // Continue without the address
-      })
-    ).subscribe((client: IClient | null) => {
-      if (client) {
-        this.customerAddress = `${client.address}, ${client.city?.name}`;
-        console.log('Adresse du client récupérée:', this.customerAddress);
-      } else {
-        this.customerAddress = 'Adresse non disponible';
-      }
-    });
-  }
-
+  // This makes environment configuration accessible in the component and prevents modification.
   protected readonly environment = environment;
 }
