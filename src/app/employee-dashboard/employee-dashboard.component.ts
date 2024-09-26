@@ -1,7 +1,7 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {EmployeeService} from "../../services/employee.service";
 import {AuthService} from "../../services/auth.service";
-import {Observable} from "rxjs";
+import {Observable, of} from "rxjs";
 import {IEmployee, IOrder, IOrderStatus} from "../../services/entities";
 import {AsyncPipe, CommonModule, CurrencyPipe, DatePipe, JsonPipe, NgForOf, NgIf} from "@angular/common";
 import {OrderService} from "../../services/order.service";
@@ -49,7 +49,13 @@ export class EmployeeDashboardComponent implements OnInit {
         this.orderStatuses = orderStatuses;
       },
       (error) => {
-        console.error('Error fetching order statuses', error);
+        this.toastr.error(error, 'Erreur lors du chargement des commandes. Notifier l\'administrateur',
+          {
+            closeButton: true,
+            timeOut: 10000,
+            progressBar: true,
+          }
+        );
       }
       );
   }
@@ -66,7 +72,6 @@ export class EmployeeDashboardComponent implements OnInit {
           window.location.reload();
         },
         (error) => {
-          console.error('Error updating order status', error);
           this.toastr.error('Réessayez dans quelques minutes ou contactez l\'administrateur. ', 'Erreur de mise à jour du statut de la commande.',
             {
               closeButton: true,
@@ -86,4 +91,5 @@ export class EmployeeDashboardComponent implements OnInit {
     }
   }
 
+  protected readonly of = of;
 }

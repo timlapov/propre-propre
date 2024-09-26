@@ -1,15 +1,16 @@
-<nav class="navbar navbar-dark navbar-expand-md navbar-light custom-navbar fixed-top mx-lg-5 my-lg-1 pe-md-0 ps-md-3">
+<nav class="navbar navbar-dark navbar-expand-md custom-navbar fixed-top mx-lg-5 my-lg-1 pe-md-0 ps-md-3">
   <div class="container-fluid">
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" (click)="isNavbarCollapsed = !isNavbarCollapsed"
+            aria-controls="navbarNav" [attr.aria-expanded]="isNavbarCollapsed" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <a class="navbar-brand" href="#">
-      <img src="assets/images/logo1.png" alt="logo propre-propre" class="img-fluid navbar-logo">
+    <a class="navbar-brand" routerLink="/">
+      <img src="assets/images/logo1.webp" alt="logo propre-propre" class="img-fluid navbar-logo">
     </a>
-    <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+    <div class="collapse navbar-collapse justify-content-between" id="navbarNav" [ngClass]="{'show': isNavbarCollapsed}">
       <ul class="navbar-nav mx-auto">
         <li class="nav-item"><a class="nav-link text-hb-blue" routerLink="/">ACCUEIL</a></li>
-        <li class="nav-item"><a class="nav-link text-hb-blue" routerLink="/services">SERVICES</a></li>
+        <li class="nav-item"><a class="nav-link text-hb-blue" routerLink="/services">SERVICES<span *ngIf="hasCartItems" class="pulse-r300 ms-1"></span></a></li>
         <li class="nav-item"><a class="nav-link text-hb-blue" routerLink="/contact">CONTACTS</a></li>
       </ul>
     <div class="btn-group">

@@ -103,3 +103,4 @@ export interface ICoefficients {
   ironingCoefficient: number;
   perfumingCoefficient: number;
 }
+

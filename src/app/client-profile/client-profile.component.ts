@@ -1,10 +1,10 @@
-import { Component, inject, OnInit } from '@angular/core';
+import {AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import { AuthService } from "../../services/auth.service";
 import { CommonModule, DatePipe } from "@angular/common";
 import {Router, RouterLink} from "@angular/router";
 import { ICity, IClient, IGender, IOrder } from "../../services/entities";
 import { ClientService } from "../../services/client.service";
-import { Observable } from "rxjs";
+import {Observable, Subject} from "rxjs";
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { SupportService } from "../../services/support.service";
 import { Modal } from 'bootstrap';
@@ -23,7 +23,7 @@ import {LeadingZerosPipe} from "../../pipes/leading-zeros.pipe";
   templateUrl: './client-profile.component.html',
   styleUrls: ['./client-profile.component.css']
 })
-export class ClientProfileComponent implements OnInit {
+export class ClientProfileComponent implements OnInit, AfterViewInit, OnDestroy {
   // Services Injection
   private authService = inject(AuthService);
   private clientService = inject(ClientService);
@@ -43,8 +43,10 @@ export class ClientProfileComponent implements OnInit {
   genders: IGender[] = [];
   changePassword: boolean = false;
 
+  @ViewChild('editProfileModal') editProfileModalRef!: ElementRef;
   private editProfileModal: Modal | null = null;
   protected filteredOrders: IOrder[] = [];
+  private destroy$ = new Subject<void>();
 
   ngOnInit() {
     // Fetch Cities and Genders
@@ -58,18 +60,27 @@ export class ClientProfileComponent implements OnInit {
       this.$client.subscribe(client => {
         this.client = client;
         this.initForm(client);
-        this.filterOrders(); // Initialize filteredOrders
+        this.filterOrders();
       });
     } else {
-      console.error('No valid client JWT found');
+      this.toastr.error('Votre session a expiré. Veuillez vous reconnecter.', 'Session expirée', {
+        timeOut: 3500,
+        progressBar: true,
+      });
       this.router.navigate(['/login']);
     }
+  }
 
-    // Initialize Modal
-    const modalElement = document.getElementById('editProfileModal');
-    if (modalElement) {
-      this.editProfileModal = new Modal(modalElement);
+  ngAfterViewInit() {
+    // Initialize Modal using @ViewChild
+    if (this.editProfileModalRef) {
+      this.editProfileModal = new Modal(this.editProfileModalRef.nativeElement);
     }
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   // Initialize Edit Profile Form
@@ -127,7 +138,6 @@ export class ClientProfileComponent implements OnInit {
 
       this.clientService.updateClient(this.clientJwt.id, updatedClient).subscribe(
         (client) => {
-          console.log('Client updated:', client);
           // Refresh Client Data
           this.$client = this.clientService.getClientById(this.clientJwt.id);
           this.$client.subscribe(updatedClient => {
@@ -137,14 +147,14 @@ export class ClientProfileComponent implements OnInit {
           // Close Modal and Show Success Message
           this.editProfileModal?.hide();
           this.toastr.success('Votre profil a été mis à jour avec succès', 'Mise à jour réussie', {
-            timeOut: 3000,
+            timeOut: 3500,
             progressBar: true,
           });
         },
         (error) => {
           console.error('Error updating client:', error);
           this.toastr.error('Une erreur s\'est produite lors de la mise à jour du profil', 'Erreur', {
-            timeOut: 3000,
+            timeOut: 3500,
             progressBar: true,
           });
         }
@@ -191,6 +201,12 @@ export class ClientProfileComponent implements OnInit {
     return item.id;
   }
 
-  protected readonly localStorage = localStorage;
-  protected readonly JSON = JSON;
+  get hasCartItems(): boolean {
+    const cart = localStorage.getItem('cart');
+    if (!cart) {
+      return false;
+    }
+    const cartItems = JSON.parse(cart);
+    return Array.isArray(cartItems) && cartItems.length > 0;
+  }
 }

@@ -56,15 +56,6 @@ export class AuthService {
   }
 
   isLogged(): boolean {
-    // const token = this.getToken();
-    // /*ici on va proteger le token voir en dessous pour installer jwt-decode */
-    // if (!token) return false;
-    // try {
-    //   const decodedToken = jwtDecode<IToken>(token);
-    //   return decodedToken.exp > Date.now() / 1000;
-    // } catch (error) {
-    //   return false;
-    // }
     return !!this.getToken() && !this.isTokenExpired();
   }
 
@@ -76,13 +67,6 @@ export class AuthService {
     return localStorage.getItem('refresh_token');
   }
 
-  // logout(): void {
-  //   localStorage.removeItem('token');
-  //   localStorage.removeItem('refreshToken');
-  //   this.router.navigate(['login']).then(() => {
-  //     window.location.reload(); // Ensure full reload to reset application state
-  //   });
-  // }
   logout(): void {
     console.log('AuthService.logout() вызван');
     localStorage.removeItem('token');

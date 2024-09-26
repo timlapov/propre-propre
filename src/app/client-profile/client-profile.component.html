@@ -2,7 +2,7 @@
   <div class="row d-flex">
     <!-- Left Column: User Info -->
     @if ($client | async; as client) {
-      @if (localStorage.getItem('cart') && JSON.stringify(localStorage.getItem('cart') ?? []).length > 4) {
+      @if (hasCartItems) {
       <div class="alert alert-primary-custom text-center fw-bold">
         Votre panier contient des articles. <a class="alert-link" routerLink="/services">Passer à la commande</a>
       </div>
@@ -13,17 +13,21 @@
             <h5 class="card-title" id="userName">{{ client.name }} {{ client.surname }}</h5>
             <p class="card-text">
               <span class="badge bg-success">
-                {{ client.orders?.length || 0 }} commande{{ client.orders?.length === 1 ? '' : 's' }} !
+                {{ client.orders?.length || 0 }} commandes{{ client.orders?.length === 1 ? '' : 's' }} !
               </span>
             </p>
             <div class="mb-3 text-start">
               <small class="text-muted">Email</small>
               <p id="userEmail">{{ client.email }}</p>
             </div>
+
+            @if(client.birthdate) {
             <div class="mb-3 text-start">
               <small class="text-muted">Date de naissance</small>
               <p id="userBirthdate">{{ client.birthdate | date:'dd/MM/yyyy' }}</p>
             </div>
+            }
+
             <div class="mb-3 text-start">
               <small class="text-muted">Genre</small>
               <p id="userGender">{{ client.gender?.name }}</p>
@@ -121,7 +125,7 @@
 </div>
 
 <!-- MODAL UPDATE PROFILE -->
-<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true" #editProfileModal>
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">

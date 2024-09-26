@@ -42,7 +42,6 @@ export class ContactComponent {
       'M8xk45izLg6PCP8nU'
     )
       .then((result: EmailJSResponseStatus) => {
-        console.log(result.text);
         this.isSending = false;
         this.emailSent = true;
         this.emailError = false;
@@ -52,7 +51,6 @@ export class ContactComponent {
           progressBar: true,
         });
       }, (error) => {
-        console.error(error.text);
         this.isSending = false;
         this.emailSent = false;
         this.emailError = true;
