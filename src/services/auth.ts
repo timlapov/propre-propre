@@ -20,4 +20,6 @@ export interface DecodedToken extends IToken {
   roles: string[];
   name: string;
   surname: string;
+  exp: number;
+  iat: number;
 }

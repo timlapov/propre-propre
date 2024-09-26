@@ -25,18 +25,14 @@ export class AuthService {
   refreshToken(): Observable<IToken> {
     const refreshToken = this.getRefreshToken();
     if (!refreshToken) {
-      console.warn('Отсутствует refresh token. Выполняется logout.');
       this.logout();
       return throwError(() => 'No refresh token available');
     }
-    console.log('Попытка обновления токена...');
     return this.http.post<IToken>(`${this.url}api/token/refresh`, { refresh_token: refreshToken }).pipe(
       tap(tokenData => {
-        console.log('Токен обновлен:', tokenData);
         this.saveTokens(tokenData.token, tokenData.refresh_token);
       }),
       catchError(error => {
-        console.error('Ошибка при обновлении токена:', error);
         this.logout();
         return throwError(() => error);
       })
@@ -68,7 +64,6 @@ export class AuthService {
   }
 
   logout(): void {
-    console.log('AuthService.logout() вызван');
     localStorage.removeItem('token');
     localStorage.removeItem('refresh_token');
     this.router.navigate(['login']);
@@ -80,7 +75,6 @@ export class AuthService {
     try {
       return jwtDecode<DecodedToken>(token);
     } catch (error) {
-      console.error('Erreur lors du décodage du token :', error);
       return null;
     }
   }

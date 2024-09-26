@@ -1,7 +1,9 @@
-import { Injectable, inject } from '@angular/core';
+import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService} from "../auth.service";
 
+// Guard to protect routes that require authentication.
+// Redirects to the login page if the user is not authenticated.
 export const authGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
@@ -9,7 +11,6 @@ export const authGuard: CanActivateFn = () => {
   if (authService.isLogged()) {
     return true;
   } else {
-    router.navigate(['login']);
-    return false;
+    return router.createUrlTree(['login']);
   }
 };
