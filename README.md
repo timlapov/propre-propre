@@ -2,26 +2,62 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.1.3.
 
-## Development server
+## Launch in a docker container
+### Requirements
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+- Docker
+- Docker Compose
 
-## Code scaffolding
+### Installation and Running
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+1. Clone the repository:
 
-## Build
+```git clone https://github.com/timlapov/propre-propre.git```
+```cd propre-propre```
+2. Build and run the Docker container:
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+```docker build -t propre-propre .```
 
-## Running unit tests
+```docker run -p 8080:8080 propre-propre```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+The application will be available at `http://localhost:8080/`.
 
-## Running end-to-end tests
+## Development
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+For development purposes, you can use the following commands:
 
-## Further help
+1. Install dependencies:
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+```npm install```
+2. Run the development server:
+
+```ng serve```
+
+The app will be available at `http://localhost:4200/`.
+
+## Building
+
+To create a production version of the app:
+
+```ng build --prod```
+The built files will be in the `dist/` directory.
+
+## Testing
+
+To run unit tests:
+
+```ng test```
+
+To run e2e tests:
+
+```ng e2e```
+
+## Project Structure
+
+- `src/app/` - application components
+- `src/services/` - services for API communication and business logic
+- `src/environments/` - configuration files for different environments
+
+## Additional Information
+
+For more information about Angular CLI, use `ng help` or check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
