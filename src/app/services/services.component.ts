@@ -45,9 +45,7 @@ export class ServicesComponent implements OnInit {
   private router = inject(Router);
   private orderService = inject(OrderService);
   private supportService = inject(SupportService);
-  private cdr = inject(ChangeDetectorRef);
   private toastr = inject(ToastrService);
-  private clientService = inject(ClientService);
 
   @ViewChild('paymentMethodModal') paymentMethodModal!: PaymentMethodModalComponent;
 
