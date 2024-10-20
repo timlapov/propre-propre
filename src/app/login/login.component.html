@@ -1,44 +1,47 @@
 <h1 class="text-center my-3">Connexion</h1>
 <form (ngSubmit)="login()" [formGroup]="form">
-  <div class="container col-6">
-    <div class="form-floating mb-3">
-      <input type="email" class="form-control" id="email" formControlName="email" placeholder="name@example.com">
-      <label for="email">Adresse e-mail</label>
-      <div class="text-danger" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
-        <small *ngIf="form.get('email')?.errors?.['required']">L'e-mail est obligatoire</small>
-        <small *ngIf="form.get('email')?.errors?.['email']">E-mail invalide</small>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-6">
+        <div class="form-floating mb-3">
+          <input type="email" class="form-control" id="email" formControlName="email" placeholder="name@example.com">
+          <label for="email">Adresse e-mail</label>
+          <div class="text-danger" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+            <small *ngIf="form.get('email')?.errors?.['required']">L'e-mail est obligatoire</small>
+            <small *ngIf="form.get('email')?.errors?.['email']">E-mail invalide</small>
+          </div>
+        </div>
+        <div class="form-floating">
+          <input type="password" class="form-control" id="password" formControlName="password" placeholder="Password">
+          <label for="password">Mot de passe</label>
+          <div class="text-danger" *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
+            <small *ngIf="form.get('password')?.errors?.['required']">Le mot de passe est obligatoire</small>
+            <!-- Исправлено: правильные проверки для пароля -->
+          </div>
+        </div>
+        <button class="btn btn-primary-custom my-3 px-3" [disabled]="isSubmitting">
+          <span
+            *ngIf="isSubmitting"
+            class="spinner-border spinner-border-sm me-2"
+            role="status"
+            aria-hidden="true"
+          ></span>
+          Se connecter
+        </button>
       </div>
     </div>
-    <div class="form-floating">
-      <input type="password" class="form-control" id="password" formControlName="password" placeholder="Password">
-      <label for="password">Mot de passe</label>
-      <div class="text-danger" *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
-        <small *ngIf="form.get('email')?.errors?.['required']">
-          L'e-mail est obligatoire
-        </small>
-        <small *ngIf="form.get('email')?.errors?.['email']">
-          E-mail invalide
-        </small>
-      </div>
-    </div>
-    <button class="btn btn-primary-custom my-3 px-3" [disabled]="isSubmitting">
-      <span
-        *ngIf="isSubmitting"
-        class="spinner-border spinner-border-sm me-2"
-        role="status"
-        aria-hidden="true"
-      ></span>
-      Se connecter</button>
   </div>
 </form>
-<div class="row mt-5 mb-3">
-  <div class="col-md-6 text-center mb-3 mb-md-0">
-    <span>Mot de passe oublié ? </span>
-    <a class="nav-link d-inline-block" (click)="openPasswordResetModal()">Restaurer ici</a>
-  </div>
-  <div class="col-md-6 text-center">
-    <span>Pas de compte ? </span>
-    <a class="nav-link d-inline-block" routerLink="/client/registration">S'inscrire ici</a>
+<div class="container">
+  <div class="row mt-5 mb-3">
+    <div class="col-md-6 text-center mb-3 mb-md-0">
+      <span>Mot de passe oublié ? </span>
+      <a class="nav-link d-inline-block" (click)="openPasswordResetModal()">Restaurer ici</a>
+    </div>
+    <div class="col-md-6 text-center">
+      <span>Pas de compte ? </span>
+      <a class="nav-link d-inline-block" routerLink="/client/registration">S'inscrire ici</a>
+    </div>
   </div>
 </div>
 
