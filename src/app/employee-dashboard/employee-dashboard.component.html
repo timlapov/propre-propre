@@ -23,7 +23,13 @@
                 <div class="card-body">
                   <h5 class="card-title">Commande #{{ order.id }} <span *ngIf="order.express" class="badge bg-primary-custom rounded-pill">EXPRESS</span></h5>
                   <p class="card-text">Date de création : {{ order.created | date:'dd/MM/yyyy HH:mm' }}</p>
-                  <h6 class="card-subtitle mb-1 text-muted fw-bold">Articles :</h6>
+                  <div class="bg-light p-2 rounded-3">
+                    <p class="card-text">Client : <span class="fw-bold">{{ order.client.name }} {{ order.client.surname }}</span> ({{ order.client.gender?.name}})</p>
+                    <p class="card-text">{{ order.client.email }}</p>
+                    <p class="card-text">{{ order.client.address }}</p>
+                    <p class="card-text">{{ order.client.city?.name }}</p>
+                  </div>
+                  <h6 class="card-subtitle mb-1 mt-3 text-muted fw-bold">Articles :</h6>
                   <ul class="list-group list-group-flush mb-1">
                     @for (item of order.items; track $index) {
                     <li class="list-group-item">
@@ -36,12 +42,6 @@
                       <p class="text-center">Vous n'avez pas de commandes pour le moment. Vous pouvez vous reposer maintenant</p>
                     }
                   </ul>
-                  <div class="bg-light p-2 rounded-3">
-                  <p class="card-text">Client : <span class="fw-bold">{{ order.client.name }} {{ order.client.surname }}</span> ({{ order.client.gender?.name}})</p>
-                    <p class="card-text">{{ order.client.email }}</p>
-                    <p class="card-text">{{ order.client.address }}</p>
-                    <p class="card-text">{{ order.client.city?.name }}</p>
-                  </div>
                 </div>
 
                     <div class="btn-group">

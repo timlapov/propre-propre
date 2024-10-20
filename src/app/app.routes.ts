@@ -13,6 +13,7 @@ import {roleGuard} from "../services/guards/role.guard";
 import {AuthService} from "../services/auth.service";
 import {servicesGuard} from "../services/guards/services.guard";
 import {PasswordResetComponent} from "./password-reset/password-reset.component";
+import {PolicyComponent} from "./policy/policy.component";
 
 export const routes: Routes = [
   { path: '', component: LayoutComponent,
@@ -25,6 +26,7 @@ export const routes: Routes = [
     { path: 'client/reset-password', component: PasswordResetComponent },
     { path: 'employee/dashboard', component: EmployeeDashboardComponent, canActivate: [roleGuard], data: { requiredRole: 'ROLE_EMPLOYEE' } },
     { path: 'contact', component: ContactComponent},
+    { path: 'policy', component: PolicyComponent },
     { path: '**', component: Error404Component},
   ]}
 ];

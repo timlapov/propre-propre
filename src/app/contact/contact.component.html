@@ -9,8 +9,7 @@
 
       <div class="mt-4">
 <!--        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3025.092703600283!2d3.124164579587121!3d45.7580998656952!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47f71ecc42d76497%3A0xa9a1c9d7248ae956!2sHuman%20Booster!5e0!3m2!1sru!2sfr!4v1723976200826!5m2!1sru!2sfr"-->
-<!--                width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Localisation de Laverie Propre-Propre de Lyon"></iframe>-->
-        <iframe width="100%" height="300" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" sandbox="allow-forms allow-scripts allow-same-origin" src="https://www.geoportail.gouv.fr/embed/visu.html?c=4.897116,45.757138&z=17&l0=TRANSPORTNETWORKS.ROADS::GEOPORTAIL:OGC:WMTS(1)&l1=TRANSPORTNETWORKS.RAILWAYS::GEOPORTAIL:OGC:WMTS(1)&l2=BUILDINGS.BUILDINGS::GEOPORTAIL:OGC:WMTS(1;g)&permalink=yes" allowfullscreen></iframe>
+        <iframe title="Carte indiquant l'emplacement du pressing Propre-Propre"  width="100%" height="300px" frameborder="0" allowfullscreen allow="geolocation" src="https://umap.openstreetmap.fr/fr/map/anonymous-edit/1126668:G0v8MStQ7PHVms-tb2DthrF_RoO9NMSUjA_pa5IsCDY?scaleControl=false&miniMap=false&scrollWheelZoom=false&zoomControl=true&editMode=disabled&moreControl=true&searchControl=null&tilelayersControl=null&embedControl=null&datalayersControl=true&onLoadPanel=none&captionBar=false&captionMenus=true"></iframe>
       </div>
     </div>
 
@@ -27,14 +26,18 @@
           <label for="email">Email</label>
         </div>
         <div class="form-floating mb-3">
-          <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" placeholder="Votre numéro de téléphone" [(ngModel)]="formData.phoneNumber">
-          <label for="phoneNumber">Numéro de téléphone</label>
-        </div>
-        <div class="form-floating mb-3">
           <textarea id="message" name="message" class="form-control" placeholder="Votre message" style="height: 150px" required [(ngModel)]="formData.message"></textarea>
           <label for="message">Message</label>
         </div>
-        <button type="submit" class="btn btn-secondary-custom w-100" [disabled]="isSending">
+        <!-- Privacy policy -->
+        <div class="form-check mb-3">
+          <input type="checkbox" id="consent" name="consent" class="form-check-input" required [(ngModel)]="consent">
+          <label for="consent" class="form-check-label">
+            J'accepte la <a routerLink="/policy" target="_blank" class="link_policy">politique de confidentialité</a>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-secondary-custom w-100" [disabled]="isSending || contactForm.invalid">
           {{ isSending ? 'En cours...' : 'Envoyer' }}
         </button>
       </form>

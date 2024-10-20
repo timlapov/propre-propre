@@ -4,13 +4,13 @@ import {ClientService} from "../../services/client.service";
 import {ICity, IGender} from "../../services/entities";
 import {SupportService} from "../../services/support.service";
 import {CommonModule} from "@angular/common";
-import {Router} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 import {ToastrModule, ToastrService} from "ngx-toastr";
 
 @Component({
   selector: 'app-registration',
   standalone: true,
-  imports: [ReactiveFormsModule, FormsModule, CommonModule, ToastrModule],
+  imports: [ReactiveFormsModule, FormsModule, CommonModule, ToastrModule, RouterLink],
   templateUrl: './registration.component.html',
   styleUrl: './registration.component.css'
 })
@@ -37,7 +37,8 @@ export class RegistrationComponent implements OnInit {
       city: ['', Validators.required],
       address: ['', Validators.required],
       gender: [null],
-      birthdate: [null]
+      birthdate: [null],
+      consent: [false, Validators.requiredTrue]
     });
   }
 
@@ -76,7 +77,7 @@ export class RegistrationComponent implements OnInit {
         (error) => {
           this.toastr.error('Un utilisateur ayant cette adresse électronique a déjà été enregistré. ', 'Erreur d\'inscription',
             {
-              timeOut: 500,
+              timeOut: 3500,
               progressBar: true,
             });
         }
@@ -101,6 +102,7 @@ export class RegistrationComponent implements OnInit {
       !!form.get('name')?.valid &&
       !!form.get('surname')?.valid &&
       !!form.get('city')?.valid &&
-      !!form.get('address')?.valid;
+      !!form.get('address')?.valid &&
+      !!form.get('consent')?.valid
   }
 }

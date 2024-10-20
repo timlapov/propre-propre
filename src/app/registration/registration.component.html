@@ -81,6 +81,17 @@
           </div>
         </div>
 
+        <!-- Privacy policy -->
+        <div class="form-check mb-3">
+          <input type="checkbox" id="consent" formControlName="consent" class="form-check-input">
+          <label for="consent" class="form-check-label">
+            J'accepte la <a routerLink="/policy" target="_blank" class="link_policy">politique de confidentialité</a>
+          </label>
+          <div class="error" *ngIf="registerForm.get('consent')?.invalid && registerForm.get('consent')?.touched">
+            <span>Vous devez accepter la politique de confidentialité</span>
+          </div>
+        </div>
+
         <button type="submit" [disabled]="!requiredFieldsValid" class="btn btn-primary-custom mt-4">S'inscrire</button>
 
       </div><!-- End of second column -->

@@ -89,3 +89,7 @@ body {
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
 }
+
+.link_policy {
+  color: var(--primary);
+}

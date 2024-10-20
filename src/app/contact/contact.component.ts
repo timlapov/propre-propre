@@ -3,6 +3,7 @@ import {ToastrService} from "ngx-toastr";
 import emailjs, { type EmailJSResponseStatus } from '@emailjs/browser';
 import {FormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
+import {RouterLink} from "@angular/router";
 
 @Component({
   selector: 'app-contact',
@@ -10,6 +11,7 @@ import {CommonModule} from "@angular/common";
   imports: [
     FormsModule,
     CommonModule,
+    RouterLink,
   ],
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.css'
@@ -18,10 +20,10 @@ export class ContactComponent {
   formData = {
     name: '',
     email: '',
-    phoneNumber: '',
     message: ''
   };
 
+  consent: boolean = false;
   isSending = false;
   emailSent = false;
   emailError = false;
@@ -29,8 +31,8 @@ export class ContactComponent {
   toastr = inject(ToastrService);
 
   sendEmail(form: any) {
-    if (form.invalid) {
-      this.toastr.error('Veuillez remplir tous les champs obligatoires', 'Erreur');
+    if (form.invalid || !this.consent) {
+      this.toastr.error('Veuillez remplir tous les champs obligatoires et accepter la politique de confidentialité.', 'Erreur');
       return;
     }
 
