@@ -58,6 +58,10 @@ To run e2e tests:
 - `src/services/` - services for API communication and business logic
 - `src/environments/` - configuration files for different environments
 
+## License
+
+This project is provided under a restricted license. It is available for viewing purposes only to demonstrate the author's skills for potential employers. Use of the code, including but not limited to copying, modifying, or redistributing, is strictly prohibited without explicit permission.
+
 ## Additional Information
 
 For more information about Angular CLI, use `ng help` or check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
